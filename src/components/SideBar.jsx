@@ -67,7 +67,7 @@ function SideBar({ activePage }) {
             <img
               width="25"
               height="25"
-              src={`https://img.icons8.com/fluency-systems-${activePage === "packages" ? "filled" : "regular"}/50/document.png`}
+              src={`https://img.icons8.com/fluency-systems-${activePage === "packages" ? "filled" : "regular"}/50/cardboard-box.png`}
               alt="analytics"
             />
             <h3 className="space-grotesk-semibold hidden lg:block">Packages</h3>

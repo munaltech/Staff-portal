@@ -48,7 +48,7 @@ const Signup = () => {
   };
   return (
     <div className="bg-gray-800/10 z-10 absolute top-0 left-0 right-0 bottom-0 flex items-center justify-center">
-      <Card className="mx-4 h-fit">
+      <Card className="mx-4 h-fit inter-regular">
         <h1 className="text-2xl space-grotesk-bold text-center">Sign Up</h1>
 
         <form

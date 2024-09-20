@@ -18,7 +18,7 @@ function TopBar() {
       </div>
 
       <div className="flex gap-6">
-        <Button text="Add Client" icon="plus" />
+        <Button text="Add Client" icon="plus" className="hidden sm:flex" />
         
           <img src="" alt="profile" className="w-10 h-10 rounded-full object-cover cursor-pointer" />
 
