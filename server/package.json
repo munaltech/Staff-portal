@@ -1,0 +1,23 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "description": "backend for staff portal of munal technology",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "dev": "nodemon src/index.js"
+  },
+  "keywords": [
+    "javascript",
+    "backend",
+    "staff",
+    "portal",
+    "munal",
+    "technology"
+  ],
+  "author": "Munal Technology",
+  "license": "ISC",
+  "devDependencies": {
+    "nodemon": "^3.1.6"
+  }
+}
