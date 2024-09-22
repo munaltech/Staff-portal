@@ -10,6 +10,8 @@ const pool =  mysql.createPool({
 }).promise();
 
 const connectDB = async () => {
+
+    // connect to database
     try {
         
     } catch (error) {
