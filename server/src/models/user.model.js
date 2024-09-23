@@ -12,6 +12,10 @@ const User = sequelize.define(
         role: {
             type: DataTypes.STRING,
             allowNull: false,
+            set(value) {
+                this.setDataValue("role", value.toLowerCase());
+            }
+            
         },
         email: {
             type: DataTypes.STRING,
@@ -20,6 +24,9 @@ const User = sequelize.define(
             validate: {
                 isEmail: true,
             },
+            set(value) {
+              this.setDataValue('email', value.toLowerCase()); 
+            }
         },
         phone_number: {
             type: DataTypes.STRING,
@@ -29,13 +36,16 @@ const User = sequelize.define(
             type: DataTypes.STRING,
             allowNull: false,
             unique: true,
+            set(value) {
+                this.setDataValue("username", value.toLowerCase());
+            }
         },
         password: {
             type: DataTypes.STRING,
             allowNull: false,
             validate: {
                 len: [8],
-                
+
             }
         },
         refresh_token: {

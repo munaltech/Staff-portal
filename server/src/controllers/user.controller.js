@@ -5,14 +5,17 @@ import User from "../models/user.model.js";
 
 const createUser = asyncHandler(async (req, res) => {
     console.log(req.body);
-    
+
     const { full_name, role, email, phone_number, username, password } =
         req.body;
 
     if (
-        [full_name, role, email, phone_number, username, password].some(
-            (field) => field?.trim() === ""
-        )
+        !full_name ||
+        !role ||
+        !email ||
+        !phone_number ||
+        !username ||
+        !password
     ) {
         throw new ApiError(400, "All fields are required");
     }
@@ -22,7 +25,7 @@ const createUser = asyncHandler(async (req, res) => {
         if (existingUsername) {
             throw new ApiError(409, "User already exists");
         }
-    
+
         const existingEmail = await User.findOne({ where: { email } });
         if (existingEmail) {
             throw new ApiError(409, "Email already exists");
