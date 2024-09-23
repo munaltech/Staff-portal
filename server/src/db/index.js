@@ -1,5 +1,4 @@
 import mysql from "mysql2";
-import dotenv from "dotenv";
 
 
 const pool =  mysql.createPool({
@@ -13,6 +12,8 @@ const connectDB = async () => {
 
     // connect to database
     try {
+        await pool.getConnection();
+        console.log("Database Connected");
         
     } catch (error) {
         console.log("Database Connection Error: ", error);
