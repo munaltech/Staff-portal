@@ -5,18 +5,17 @@ import { useNavigate } from "react-router-dom";
 
 const Signup = () => {
   const [fullName, setFullName] = useState("");
-  const [role, setRole] = useState(0);
+  const [role, setRole] = useState("admin");
   const [email, setEmail] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [pVisibility, setPVisibility] = useState("invisible");
   const [cpVisibility, setCPVisibility] = useState("invisible");
   const [loading, setLoading] = useState(false);
 
-
   const navigate = useNavigate();
-
 
   const goToUsers = () => {
     navigate("/users");
@@ -42,9 +41,63 @@ const Signup = () => {
     }
   };
 
-  const signup = (e) => {
+  const handleRoleChange = (event) => {
+    setRole(event.target.value);
+  };
+
+  const signup = async (e) => {
     e.preventDefault();
     setLoading(true);
+
+    if (phoneNumber.length !== 10) {
+      alert("Phone number must be 10 digits long");
+      return;
+    }
+
+    if (password.length < 8 && confirmPassword.length < 8) {
+      alert("Password must be at least 8 characters long");
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      alert("Passwords do not match");
+      return;
+    }
+
+    try {
+      const response = await fetch(
+        "http://localhost:8000/api/v1/users/create",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            full_name: fullName,
+            role,
+            email,
+            phone_number: phoneNumber,
+            username,
+            password,
+          }),
+        }
+      );
+
+      if (response.ok) {
+        alert("User created successfully");
+        setLoading(false);
+        goToUsers();
+      } else {
+        alert("Error creating user");
+        setLoading(false);
+      }
+
+      const data = await response.json();
+      console.log(data);
+    } catch (error) {
+      alert("Error creating user");
+      setLoading(false);
+    }
   };
   return (
     <div className="bg-gray-800/10 z-10 absolute top-0 left-0 right-0 bottom-0 flex items-center justify-center">
@@ -77,13 +130,14 @@ const Signup = () => {
             name="role"
             id="role"
             className="w-full rounded-md border border-gray-200 p-2"
-            onChange={(e) => setRole(e.target.value)}
+            value={role}
+            onChange={handleRoleChange}
             required
             disabled={loading}
           >
-            <option value="0">Admin</option>
-            <option value="1">Level 1</option>
-            <option value="2">Level 2</option>
+            <option value="admin">Admin</option>
+            <option value="level1">Level 1</option>
+            <option value="level2">Level 2</option>
           </select>
 
           <label htmlFor="email" hidden>
@@ -95,7 +149,7 @@ const Signup = () => {
             id="email"
             placeholder="Email"
             className="w-full rounded-md border border-gray-200 p-2"
-            onChange={(e) => setUsername(e.target.value)}
+            onChange={(e) => setEmail(e.target.value)}
             required
             disabled={loading}
           />
@@ -163,7 +217,7 @@ const Signup = () => {
               id="confirmPassword"
               placeholder="Confirm Password"
               className="w-full rounded-md border border-gray-200 p-2"
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={(e) => setConfirmPassword(e.target.value)}
               required
               disabled={loading}
             />
