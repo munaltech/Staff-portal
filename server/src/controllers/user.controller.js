@@ -57,4 +57,11 @@ const createUser = asyncHandler(async (req, res) => {
         .json(new ApiResponse(201, createdUser, "User created successfully"));
 });
 
-export { createUser };
+const getUsers = asyncHandler(async (req,res) => {
+    const users = await User.findAll({
+        attributes: { exclude: ["password", "refresh_token"] },
+    });
+    return res.status(200).json(new ApiResponse(200, users, "Users fetched successfully"));
+});
+
+export { createUser, getUsers };
