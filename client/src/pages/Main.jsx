@@ -40,7 +40,8 @@ const Main = () => {
       </div>
       
         <Routes>
-          <Route path="/users/signup" element={<Signup />} />
+          <Route path="/users/signup" element={<Signup action="signup" />} />
+          <Route path="/users/edit/:id" element={<Signup action="edit"  />} />
         </Routes>
       
     </div>

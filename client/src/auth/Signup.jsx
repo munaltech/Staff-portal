@@ -1,9 +1,9 @@
 import { Card } from "../components";
 import { ClipLoader } from "react-spinners";
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { act, useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 
-const Signup = () => {
+const Signup = ({ action }) => {
   const [fullName, setFullName] = useState("");
   const [role, setRole] = useState("admin");
   const [email, setEmail] = useState("");
@@ -14,31 +14,28 @@ const Signup = () => {
   const [pVisibility, setPVisibility] = useState("invisible");
   const [cpVisibility, setCPVisibility] = useState("invisible");
   const [loading, setLoading] = useState(false);
+  const [user, setUser] = useState(null);
+
+  const { id } = useParams();
+
+  useEffect(() => {
+    if (action === "edit" && id) {
+      fetchUser(id);
+    }
+  }, [action, id]);
 
   const navigate = useNavigate();
 
   const goToUsers = () => {
-    navigate("/users");
+    navigate("/users",{ state: { refresh: true } });
   };
 
   const togglePVisibility = () => {
-    if (pVisibility === "visible") {
-      // If the password is currently visible, hide it
-      setPVisibility("invisible");
-    } else {
-      // If the password is currently hidden, show it
-      setPVisibility("visible");
-    }
+    setPVisibility((prevState) => (prevState === "visible" ? "invisible" : "visible"));
   };
 
   const toggleCPVisibility = () => {
-    if (cpVisibility === "visible") {
-      // If the password is currently visible, hide it
-      setCPVisibility("invisible");
-    } else {
-      // If the password is currently hidden, show it
-      setCPVisibility("visible");
-    }
+    setCPVisibility((prevState) => (prevState === "visible" ? "invisible" : "visible"));
   };
 
   const handleRoleChange = (event) => {
@@ -51,16 +48,19 @@ const Signup = () => {
 
     if (phoneNumber.length !== 10) {
       alert("Phone number must be 10 digits long");
+      setLoading(false);
       return;
     }
 
     if (password.length < 8 && confirmPassword.length < 8) {
       alert("Password must be at least 8 characters long");
+      setLoading(false);
       return;
     }
 
     if (password !== confirmPassword) {
       alert("Passwords do not match");
+      setLoading(false);
       return;
     }
 
@@ -99,14 +99,88 @@ const Signup = () => {
       setLoading(false);
     }
   };
+
+  const fetchUser = async (id) => {
+    const response = await fetch(`http://localhost:8000/api/v1/users/${id}`, {
+      method: "GET",
+    });
+    const res = await response.json();
+    setUser(res.data);
+    setFullName(res.data.full_name);
+    setRole(res.data.role);
+    setEmail(res.data.email);
+    setPhoneNumber(res.data.phone_number);
+    setUsername(res.data.username);
+  };
+
+  const update = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+
+    if (phoneNumber.length !== 10) {
+      alert("Phone number must be 10 digits long");
+      setLoading(false);
+      return;
+    }
+
+    if (password.length < 8 && confirmPassword.length < 8) {
+      alert("Password must be at least 8 characters long");
+      setLoading(false);
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      alert("Passwords do not match");
+      setLoading(false);
+      return;
+    }
+
+    try {
+      const response = await fetch(
+        "http://localhost:8000/api/v1/users/update/" + id,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            full_name: fullName,
+            role,
+            email,
+            phone_number: phoneNumber,
+            username,
+            password,
+          }),
+        }
+      );
+
+      if (response.ok) {
+        alert("User updated successfully");
+        setLoading(false);
+        goToUsers();
+      } else {
+        alert("Error updating user");
+        setLoading(false);
+      }
+
+      
+    } catch (error) {
+      alert("Error updating user");
+      setLoading(false);
+    }
+
+  };
+
   return (
     <div className="bg-gray-800/10 z-10 absolute top-0 left-0 right-0 bottom-0 flex items-center justify-center">
       <Card className="mx-4 h-fit inter-regular">
-        <h1 className="text-2xl space-grotesk-bold text-center">Sign Up</h1>
+        <h1 className="text-2xl space-grotesk-bold text-center">
+          {action === "signup" ? "Sign Up" : "Edit"}
+        </h1>
 
         <form
           method="post"
-          onSubmit={signup}
+          onSubmit={action === "signup" ? signup : update}
           className="space-y-4 inter-regular mt-4"
         >
           <label htmlFor="fullName" hidden>
@@ -119,6 +193,7 @@ const Signup = () => {
             placeholder="Full Name"
             className="w-full rounded-md border border-gray-200 p-2"
             onChange={(e) => setFullName(e.target.value)}
+            value={fullName}
             required
             disabled={loading}
           />
@@ -133,7 +208,7 @@ const Signup = () => {
             value={role}
             onChange={handleRoleChange}
             required
-            disabled={loading}
+            disabled={loading || (action === "edit" && user?.role === "admin")}
           >
             <option value="admin">Admin</option>
             <option value="level1">Level 1</option>
@@ -149,6 +224,7 @@ const Signup = () => {
             id="email"
             placeholder="Email"
             className="w-full rounded-md border border-gray-200 p-2"
+            value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
             disabled={loading}
@@ -163,6 +239,7 @@ const Signup = () => {
             id="phone"
             placeholder="Phone Number"
             className="w-full rounded-md border border-gray-200 p-2"
+            value={phoneNumber}
             onChange={(e) => setPhoneNumber(e.target.value)}
             required
             disabled={loading}
@@ -177,6 +254,7 @@ const Signup = () => {
             id="username"
             placeholder="Username"
             className="w-full rounded-md border border-gray-200 p-2"
+            value={username}
             onChange={(e) => setUsername(e.target.value)}
             required
             disabled={loading}
@@ -239,7 +317,7 @@ const Signup = () => {
             {loading ? (
               <ClipLoader loading={loading} color="white" size={15} />
             ) : (
-              "Sign Up"
+              action === "edit" ? "Update" : "Sign Up"
             )}
           </button>
         </form>
@@ -254,5 +332,6 @@ const Signup = () => {
     </div>
   );
 };
+
 
 export default Signup;

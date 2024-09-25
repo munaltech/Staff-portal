@@ -6,9 +6,10 @@ const Users = () => {
   const navigate = useNavigate();
   const [users, setUsers] = useState([]);
 
+
   useEffect(() => {
     getUsers();
-  }, []);
+  }, [navigate]);
 
   const getUsers = async () => {
     const response = await fetch("http://localhost:8000/api/v1/users");
@@ -16,7 +17,13 @@ const Users = () => {
     const { data } = await response.json();
 
     setUsers(data);
-    console.log(data);
+  };
+
+  const deleteUser = async (id) => {
+    await fetch(`http://localhost:8000/api/v1/users/${id}`, {
+      method: "DELETE",
+    });
+    getUsers();
   };
 
   return (
@@ -43,26 +50,29 @@ const Users = () => {
           </thead>
           <tbody className="text-center text-balance">
             {users.map((user, index) => (
-
               <tr key={index}>
                 <td className="border px-4 py-2">{user.username}</td>
                 <td className="border px-4 py-2">{user.full_name}</td>
                 <td className="border px-4 py-2">{user.email}</td>
                 <td className="border px-4 py-2">{user.role}</td>
                 <td className="border px-4 py-2">{user.phone_number}</td>
-                <td className="border flex justify-center items-center gap-4 px-4 py-2">
+                <td className="border w-full h-full flex justify-center items-center gap-4 px-4 py-2">
                   <Button
                     icon="edit"
                     className=" bg-blue-500 hover:bg-blue-700"
+                    onClick={() => navigate(`/users/edit/${user.id}`)}
                   />
-                  <Button
-                    icon="delete"
-                    className="bg-red-700 hover:bg-red-900"
-                  />
+
+                  {user.role !== "admin" && (
+                    <Button
+                      icon="delete"
+                      className="bg-red-700 hover:bg-red-900"
+                      onClick={() => deleteUser(user.id)}
+                    />
+                  )}
                 </td>
               </tr>
             ))}
-            
           </tbody>
         </table>
       </div>
