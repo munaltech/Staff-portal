@@ -4,7 +4,6 @@ import { ApiError } from "../utils/ApiError.js";
 import User from "../models/user.model.js";
 
 const createUser = asyncHandler(async (req, res) => {
-    console.log(req.body);
 
     const { full_name, role, email, phone_number, username, password } =
         req.body;
