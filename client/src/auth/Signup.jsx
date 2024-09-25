@@ -1,6 +1,6 @@
 import { Card } from "../components";
 import { ClipLoader } from "react-spinners";
-import { act, useEffect, useState } from "react";
+import {  useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
 const Signup = ({ action }) => {
