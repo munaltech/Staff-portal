@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import { Button } from "../components";
 
 const ClientDetails = () => {
   const { id } = useParams();
@@ -8,7 +9,7 @@ const ClientDetails = () => {
 
   useEffect(() => {
     getClientDetails();
-  }, [id]);
+  });
 
   const getClientDetails = async () => {
     const response = await fetch(`http://localhost:8000/api/v1/clients/${id}`, {
@@ -36,6 +37,12 @@ const ClientDetails = () => {
     //     "updatedAt": "2024-09-25T08:16:01.000Z"
     // }
     <div className="px-8 py-4 w-full inter-regular">
+      <Button
+        text="Go Back"
+        icon="circled-left-2"
+        onClick={() => window.history.back()}
+        className={"mb-4 bg-slate-600 hover:bg-slate-500"}
+      />
       <div className=" px-8 py-4 border rounded-lg w-full">
         <h1 className="space-grotesk-semibold text-2xl text-wrap">
           {client.business_name}
@@ -53,7 +60,7 @@ const ClientDetails = () => {
               {client.representative_position}
             </p>
 
-            <div className="flex flex-col text-gray-600 items-baseline">
+            <div className="flex flex-col text-gray-600 items-baseline mt-2">
               <p className="">{client.email}</p>
               <p>{client.phone_number}</p>
             </div>
