@@ -5,9 +5,11 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 const Clients = () => {
-  const [searchLoading, setSearchLoading] = useState(false);
+  
 
   const [clients, setClients] = useState([]);
+
+  const [query, setQuery] = useState("");
 
   const navigate = useNavigate();
 
@@ -15,10 +17,7 @@ const Clients = () => {
     getClients();
   }, [navigate]);
 
-  const searchClients = (e) => {
-    e.preventDefault();
-    setSearchLoading(true);
-  };
+  
 
   const getClients = async () => {
     const response = await fetch("http://localhost:8000/api/v1/clients", {
@@ -29,23 +28,29 @@ const Clients = () => {
     setClients(res.data);
   };
 
+  const filteredClients = clients.filter((client) => {
+    return (
+      client.business_name.toLowerCase().includes(query.toLowerCase()) ||
+      client.representative_name.toLowerCase().includes(query.toLowerCase()) ||
+      client.email.toLowerCase().includes(query.toLowerCase()) ||
+      client.phone_number.toLowerCase().includes(query.toLowerCase()) ||
+      client.address.toLowerCase().includes(query.toLowerCase())
+    );
+  });
+
   return (
     <>
-      <div className="flex justify-between items-center">
+      <div className="flex gap-4 sm:gap-8 justify-between items-center">
         <PageHeading title="Clients" />
-        <form className="flex">
+        <form className="flex-1">
           <input
-            type="text"
-            className="border font-mono focus:outline-none border-gray-300 rounded-l-md px-4 py-2"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            type="search"
+            className="border font-mono bg-slate-100  focus:outline-none border-gray-500 rounded-md focus:rounded-xl px-4 py-2 transition-all duration-300 ease-in-out"
             placeholder="Search"
           />
-          <Button
-            text=""
-            icon={searchLoading ? "loading" : "search"}
-            iconClass={searchLoading ? "animate-spin" : ""}
-            className="rounded-l-none"
-            onClick={searchClients}
-          />
+          
         </form>
 
         <Button
@@ -56,8 +61,8 @@ const Clients = () => {
         />
       </div>
       <div className="mt-8 inter-regular flex flex-wrap gap-4">
-        {clients.map((client) => (
-            <Card key={client.id} client={client} />
+        {filteredClients.map((client) => (
+          <Card key={client.id} client={client} />
         ))}
 
         {clients.length === 0 && (
