@@ -1,6 +1,9 @@
-import Button from "./ui/Button";
+import { useNavigate } from "react-router-dom";
+
 
 function TopBar() {
+
+  const navigate = useNavigate();
   return (
     <div className="flex items-center justify-between px-8 py-2 border shadow-sm">
       <div className="flex gap-6 ">
@@ -12,13 +15,13 @@ function TopBar() {
             alt="menu"
           />
         </button>
-        <h1 className="text-2xl space-grotesk-bold text-gray-600">
+        <a className="text-2xl space-grotesk-bold text-gray-600 cursor-pointer" onClick={() => navigate("/")}>
           Munal Technology
-        </h1>
+        </a>
       </div>
 
       <div className="flex gap-6">
-        <Button text="Add Client" icon="plus" className="hidden sm:flex" />
+        
         
           <img src="" alt="profile" className="w-10 h-10 rounded-full object-cover cursor-pointer" />
 
