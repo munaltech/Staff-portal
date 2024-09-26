@@ -42,7 +42,7 @@ const AddClient = () => {
   };
   return (
     <div className="bg-gray-800/10 z-10 absolute top-0 left-0 right-0 bottom-0 flex items-center justify-center">
-      <Card className="mx-4 h-fit inter-regular bg-slate-100">
+      <Card className="mx-4 h-fit inter-regular bg-white">
         <h1 className="text-2xl space-grotesk-bold text-center">New Client</h1>
 
         <form
@@ -54,14 +54,14 @@ const AddClient = () => {
             type="text"
             name="business_name"
             placeholder="Business Name"
-            className="w-full rounded-md bg-slate-200  border border-gray-200 p-2"
+            className="w-full rounded-md bg-slate-200  focus:bg-white focus:outline-none transition-colors duration-300 ease-in-out  border-2 border-gray-200 p-2"
             required
           />
           <input
             type="text"
             name="address"
             placeholder="Address"
-            className="w-full rounded-md bg-slate-200  border border-gray-200 p-2"
+            className="w-full rounded-md bg-slate-200  focus:bg-white focus:outline-none transition-colors duration-300 ease-in-out  border-2 border-gray-200 p-2"
             required
           />
 
@@ -69,14 +69,14 @@ const AddClient = () => {
             type="text"
             name="representative_position"
             placeholder="Representative Position"
-            className="w-full rounded-md bg-slate-200  border border-gray-200 p-2"
+            className="w-full rounded-md bg-slate-200  focus:bg-white focus:outline-none transition-colors duration-300 ease-in-out  border-2 border-gray-200 p-2"
             required
           />
           <input
             type="text"
             name="representative_name"
             placeholder="Representative Name"
-            className="w-full rounded-md bg-slate-200  border border-gray-200 p-2"
+            className="w-full rounded-md bg-slate-200  focus:bg-white focus:outline-none transition-colors duration-300 ease-in-out  border-2 border-gray-200 p-2"
             required
           />
 
@@ -84,21 +84,21 @@ const AddClient = () => {
             type="text"
             name="email"
             placeholder="Email"
-            className="w-full rounded-md bg-slate-200  border border-gray-200 p-2"
+            className="w-full rounded-md bg-slate-200  focus:bg-white focus:outline-none transition-colors duration-300 ease-in-out  border-2 border-gray-200 p-2"
             required
           />
           <input
             type="text"
             name="phone_number"
             placeholder="Phone Number"
-            className="w-full rounded-md bg-slate-200  border border-gray-200 p-2"
+            className="w-full rounded-md bg-slate-200  focus:bg-white focus:outline-none transition-colors duration-300 ease-in-out  border-2 border-gray-200 p-2"
           />
 
           <input
             type="text"
             name="card_name"
             placeholder="Card Name"
-            className="w-full rounded-md bg-slate-200  border border-gray-200 p-2"
+            className="w-full rounded-md bg-slate-200  focus:bg-white focus:outline-none transition-colors duration-300 ease-in-out  border-2 border-gray-200 p-2"
             required
           />
 
@@ -106,7 +106,7 @@ const AddClient = () => {
             type="text"
             name="sort_code"
             placeholder="Sort Code"
-            className="w-full rounded-md bg-slate-200  border border-gray-200 p-2"
+            className="w-full rounded-md bg-slate-200  focus:bg-white focus:outline-none transition-colors duration-300 ease-in-out  border-2 border-gray-200 p-2"
             required
           />
 
@@ -114,7 +114,7 @@ const AddClient = () => {
             type="text"
             name="account_number"
             placeholder="Account Number"
-            className="w-full rounded-md bg-slate-200  border border-gray-200 p-2"
+            className="w-full rounded-md bg-slate-200  focus:bg-white focus:outline-none transition-colors duration-300 ease-in-out  border-2 border-gray-200 p-2"
             required
           />
 
@@ -122,7 +122,7 @@ const AddClient = () => {
             type="text"
             name="bank_name"
             placeholder="Bank Name"
-            className="w-full rounded-md bg-slate-200  border border-gray-200 p-2"
+            className="w-full rounded-md bg-slate-200  focus:bg-white focus:outline-none transition-colors duration-300 ease-in-out  border-2 border-gray-200 p-2"
             required
           />
 
