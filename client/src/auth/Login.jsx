@@ -3,15 +3,14 @@ import { ClipLoader } from "react-spinners";
 import { useState } from "react";
 
 const Login = () => {
-
   const [visibility, setVisibility] = useState("invisible");
 
   const [loading, setLoading] = useState(false);
 
   const [username, setUsername] = useState("");
-  
+
   const [password, setPassword] = useState("");
-  
+
   const [remember, setRemember] = useState(false);
 
   const toggleVisibility = () => {
@@ -28,9 +27,29 @@ const Login = () => {
     e.preventDefault();
     setLoading(true);
 
+    try {
+      const response = await fetch("http://localhost:8000/api/v1/users/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ username, password }),
+      });
 
+      if (response.ok) {
+        const result = await response.json();
+        localStorage.setItem("access_token", result.data.access_token);
+        localStorage.setItem("refresh_token", result.data.refresh_token);
+        setLoading(false);
+        window.location.href = "/";
+      } else {
+        setLoading(false);
+      }
+    } catch (error) {
+      setLoading(false);
+      console.log(error);
+    }
   };
-
 
   return (
     <div className="h-screen flex flex-col py-8 items-center gap-4">
@@ -87,7 +106,7 @@ const Login = () => {
             />
           </div>
 
-          <div className="flex items-center justify-end">
+          {/* <div className="flex items-center justify-end">
             <input
               type="checkbox"
               name="remember"
@@ -99,7 +118,7 @@ const Login = () => {
             <label htmlFor="remember" className="text-gray-700 ms-2">
               Remember Me
             </label>
-          </div>
+          </div> */}
 
           <button
             type="submit"
@@ -116,6 +135,5 @@ const Login = () => {
     </div>
   );
 };
-
 
 export default Login;

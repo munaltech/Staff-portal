@@ -1,4 +1,4 @@
-import { Card } from "../components";
+import { Card, Error } from "../components";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { ClipLoader } from "react-spinners";
@@ -7,6 +7,7 @@ const AddClient = () => {
   const navigate = useNavigate();
 
   const [loading, setLoading] = useState(false);
+
 
   const addClient = async (e) => {
     e.preventDefault();
@@ -18,27 +19,34 @@ const AddClient = () => {
       data[key] = value;
     });
 
-    const response = await fetch("http://localhost:8000/api/v1/clients/create", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    });
-    const result = await response.json();
-    if (result.status === "success") {
-      alert(result.message);
+    try {
+      const response = await fetch(
+        "http://localhost:8000/api/v1/clients/create",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(data),
+        }
+      );
+      const result = await response.json();
+      if (response.ok) {
+        alert(result.message);
+        setLoading(false);
+        goToClients();
+      } else {
+        alert(result.message);
+        setLoading(false);
+      }
+    } catch (error) {
       setLoading(false);
-      goToClients();
-    }else{
-      alert(result.message);
-      setLoading(false);
+      console.log(error);
     }
-
   };
 
   const goToClients = () => {
-    navigate("/clients",{ state: { refresh: true } });
+    navigate("/clients");
   };
   return (
     <div className="bg-gray-800/10 z-10 absolute top-0 left-0 right-0 bottom-0 flex items-center justify-center">

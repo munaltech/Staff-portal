@@ -11,6 +11,10 @@ function SideBar({ activePage }) {
     navigate("/clients");
   };
 
+  const goToSubscriptions = () => {
+    navigate("/subscriptions");
+  };
+
   const goToPackages = () => {
     navigate("/packages");
   };
@@ -59,6 +63,21 @@ function SideBar({ activePage }) {
               alt="link"
             />
             <h3 className="space-grotesk-semibold hidden lg:block">Clients</h3>
+          </button>
+
+
+          {/* Subscriptions Button */}
+          <button
+            className={`w-full px-2 py-2 flex justify-start items-center gap-6 rounded-md ${activePage === "subscriptions" && "bg-slate-100"} hover:bg-slate-100`}
+            onClick={goToSubscriptions}
+          >
+            <img
+              width="25"
+              height="25"
+              src={`https://img.icons8.com/fluency-systems-${activePage === "subscriptions" ? "filled" : "regular"}/50/subscription.png`}
+              alt="subscription"
+            />
+            <h3 className="space-grotesk-semibold hidden lg:block">Subscriptions</h3>
           </button>
 
           {/* Packages Button */}

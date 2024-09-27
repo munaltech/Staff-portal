@@ -2,7 +2,7 @@ import { sequelize } from "../db/index.js";
 import { DataTypes } from "sequelize";
 
 const Client = sequelize.define(
-    "clients",
+    "Client",
     {
         business_name: {
             type: DataTypes.STRING,

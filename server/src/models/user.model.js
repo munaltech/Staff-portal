@@ -1,9 +1,10 @@
 import { DataTypes } from "sequelize";
 import { sequelize } from "../db/index.js";
 import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
 
 const User = sequelize.define(
-    "users",
+    "User",
     {
         full_name: {
             type: DataTypes.STRING,
@@ -14,8 +15,7 @@ const User = sequelize.define(
             allowNull: false,
             set(value) {
                 this.setDataValue("role", value.toLowerCase());
-            }
-            
+            },
         },
         email: {
             type: DataTypes.STRING,
@@ -25,8 +25,8 @@ const User = sequelize.define(
                 isEmail: true,
             },
             set(value) {
-              this.setDataValue('email', value.toLowerCase()); 
-            }
+                this.setDataValue("email", value.toLowerCase());
+            },
         },
         phone_number: {
             type: DataTypes.STRING,
@@ -38,15 +38,14 @@ const User = sequelize.define(
             unique: true,
             set(value) {
                 this.setDataValue("username", value.toLowerCase());
-            }
+            },
         },
         password: {
             type: DataTypes.STRING,
             allowNull: false,
             validate: {
                 len: [8],
-
-            }
+            },
         },
         refresh_token: {
             type: DataTypes.STRING,
@@ -70,5 +69,25 @@ const User = sequelize.define(
         },
     }
 );
+
+User.prototype.comparePassword = async function (password) {
+    return await bcrypt.compare(password, this.password);
+};
+
+User.prototype.generateAccessToken = function () {
+    return jwt.sign(
+        { id: this.id, username: this.username },
+        process.env.ACCESS_TOKEN_SECRET,
+        {
+            expiresIn: process.env.ACCESS_TOKEN_EXPIRY,
+        }
+    );
+};
+
+User.prototype.generateRefreshToken = function () {
+    return jwt.sign({ id: this.id }, process.env.REFRESH_TOKEN_SECRET, {
+        expiresIn: process.env.REFRESH_TOKEN_EXPIRY,
+    });
+};
 
 export default User;
