@@ -1,5 +1,5 @@
 import { cn } from "../../utils";
-const Button = ({ icon, text, className, onClick, iconClass }) => {
+const Button = ({ icon, text, className, onClick, iconClass, type, disabled }) => {
   return (
     <button
       className={cn(
@@ -7,6 +7,8 @@ const Button = ({ icon, text, className, onClick, iconClass }) => {
         className
       )}
       onClick={onClick}
+      type={type}
+      disabled={disabled}
     >
       <img
         width="20"
@@ -14,6 +16,8 @@ const Button = ({ icon, text, className, onClick, iconClass }) => {
         src={`https://img.icons8.com/ffffff/fluency-systems-regular/35/${icon}.png`}
         alt="plus"
         className={iconClass}
+        
+        
       />
       <h3 className={`space-grotesk-regular ${text ? "block ":"hidden"}`}>{text}</h3>
     </button>

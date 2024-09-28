@@ -5,8 +5,9 @@ import Packages from "./Packages";
 import Services from "./Services";
 import Users from "./Users";
 import Settings from "./Settings";
-import AddServices from "./AddServices";
+import AddService from "./AddService";
 import AddCategory from "./AddCategory";
 import Subscriptions from "./Subscriptions";
+import AddSubscription from "./AddSubscription";
 
-export { Main, Dashboard, Clients, Packages, Services, Users, Settings, AddServices, AddCategory, Subscriptions };
+export { Main, Dashboard, Clients, Packages, Services, Users, Settings, AddService, AddCategory, Subscriptions, AddSubscription };

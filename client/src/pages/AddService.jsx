@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 
 import { ClipLoader } from "react-spinners";
 
-const AddServices = () => {
+const AddService = () => {
   const [loading, setLoading] = useState(false);
   const [categories, setCategories] = useState([]);
 
@@ -190,4 +190,4 @@ const AddServices = () => {
   );
 };
 
-export default AddServices;
+export default AddService;

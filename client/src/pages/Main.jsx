@@ -8,9 +8,10 @@ import {
   Services,
   Users,
   Settings,
-  AddServices,
+  AddService,
   AddCategory,
-  Subscriptions
+  Subscriptions,
+  AddSubscription,
 } from "../pages";
 import { Navigate } from "react-router-dom";
 import { useEffect, useState } from "react";
@@ -54,8 +55,16 @@ const Main = () => {
         <Route path="/users/signup" element={<Signup action="signup" />} />
         <Route path="/users/edit/:id" element={<Signup action="edit" />} />
         <Route path="/clients/add" element={<AddClient />} />
-        <Route path="/services/add" element={<AddServices />} />
+        <Route path="/services/add" element={<AddService />} />
         <Route path="/services/category/add" element={<AddCategory />} />
+        <Route
+          path="/subscriptions/add"
+          element={<AddSubscription action="add" />}
+        />
+        <Route
+          path="/subscriptions/edit/:id"
+          element={<AddSubscription action="edit" />}
+        />
       </Routes>
     </div>
   );

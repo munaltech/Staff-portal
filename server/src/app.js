@@ -20,10 +20,15 @@ import userRouter from "./routes/user.routes.js";
 import clientRouter from "./routes/client.routes.js";
 import serviceRouter from "./routes/service.routes.js";
 import categoryRouter from "./routes/category.routes.js";
+import subscriptionRouter from "./routes/subscription.routes.js";
+import commentRouter from "./routes/comment.routes.js";
 
 app.use("/api/v1/users", userRouter);
 app.use("/api/v1/clients", clientRouter);
 app.use("/api/v1/services", serviceRouter);
 app.use("/api/v1/categories", categoryRouter);
+app.use("/api/v1/subscriptions", subscriptionRouter);
+app.use("/api/v1/comments", commentRouter);
+
 
 export { app };
