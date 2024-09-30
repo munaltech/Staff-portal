@@ -14,12 +14,22 @@ const ClientDetails = () => {
 
   const [comments, setComments] = useState([]);
 
+  const [usernames, setUsernames] = useState({});
+
   const commentRef = useRef(null);
+
+  const chatEndRef = useRef(null);
+
+  useEffect(() => {
+    if (chatEndRef.current) {
+      chatEndRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [comments]);
 
   useEffect(() => {
     getClientDetails();
     getComments();
-  },[navigate]);
+  }, [navigate]);
 
   useEffect(() => {
     getSubscriptions();
@@ -76,7 +86,6 @@ const ClientDetails = () => {
     );
     const res = await response.json();
     if (response.ok) {
-      alert(res.message);
       navigate(`/client/${id}`);
       setEdit(false);
     } else {
@@ -117,18 +126,56 @@ const ClientDetails = () => {
   };
 
   const getComments = async () => {
-    const response = await fetch(`http://localhost:8000/api/v1/comments/${id}`, {
-      method: "GET",
+    const response = await fetch(
+      `http://localhost:8000/api/v1/comments/${id}`,
+      {
+        method: "GET",
 
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-      },
-    });
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+        },
+      }
+    );
     const data = await response.json();
 
     setComments(data.data);
   };
+
+  const getUsername = async (userId) => {
+    const response = await fetch(
+      `http://localhost:8000/api/v1/users/${userId}`,
+      {
+        method: "GET",
+
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+        },
+      }
+    );
+
+    const data = await response.json();
+    if (response.ok) {
+      return data.data.username;
+    }
+    return null;
+  };
+
+  useEffect(() => {
+    const fetchUsernames = async () => {
+      const newUsernames = {};
+      for (const comment of comments) {
+        if (!newUsernames[comment.user_id]) {
+          const username = await getUsername(comment.user_id);
+          newUsernames[comment.user_id] = username;
+        }
+      }
+
+      setUsernames(newUsernames);
+    };
+    fetchUsernames();
+  }, [comments]);
 
   return (
     <div className="px-8 py-4 w-full inter-regular">
@@ -403,8 +450,8 @@ const ClientDetails = () => {
           </div>
         </div>
       </form>
-      <div>
-        <div className="mt-8 flex flex-col gap-4">
+      <div className="mt-8 w-full flex flex-wrap gap-x-8 gap-y-2 ">
+        <div className="flex flex-col gap-4 flex-1">
           <h3 className="inter-semibold text-xl">Subscriptions</h3>
           {subscriptions
             .filter((subscription) => subscription.client_id === client.id)
@@ -455,33 +502,53 @@ const ClientDetails = () => {
             ))}
         </div>
 
-        <div className="border-t mt-8 px-4 py-2">
-          {comments.map((comment) => (
-            <div key={comment.id}>
-              <div className="text-sm inter-regular text-gray-500">{comment.text}</div>
-            </div> 
-          ))}
-          {comments.length === 0 && (
-            <div className="text-sm inter-regular text-gray-500">No comments</div>
-          )}
-          
-          <form
-            onSubmit={addComment}
-            className="  flex items-center justify-between gap-4"
-          >
-            <input
-              type="text"
-              name="text"
-              className="border px-4 py-2 rounded-lg w-full mt-2"
-              placeholder="Add comment"
-              ref={commentRef}
-            />
-            <Button icon={"comments"} type={"submit"} />
-          </form>
+        <div className="flex-1 sm:flex-none">
+          <h3 className="inter-semibold text-xl">Comments</h3>
+          <div className="border overflow-clip rounded-lg mt-4 sm:w-96 ">
+            <div className="overflow-y-scroll h-52 px-4">
+              {comments.map((comment) => (
+                <div
+                  key={comment.id}
+                  className="flex justify-between items-center text-sm inter-regular text-gray-700 border py-2 mt-2 px-4 rounded-2xl bg-slate-100"
+                >
+                  <h1 className="inter-regular text-wrap">{comment.text}</h1>
+                  <h3 className="text-xs bg-slate-300 p-2 rounded-2xl">
+                    {usernames[comment.user_id] || "Loading..."}
+                  </h3>
+                </div>
+              ))}
+              {comments.length === 0 && (
+                <div className="text-sm w-full h-full flex justify-center items-center  inter-regular text-gray-500">
+                 
+                  <h1> No comments to show</h1>
+                </div>
+              )}
+              <div ref={chatEndRef} />
+            </div>
+
+            <form
+              onSubmit={addComment}
+              className=" flex flex-col gap-2 px-2 py-2"
+            >
+              <input
+                type="text"
+                name="text"
+                className="border px-4 py-2 rounded-lg w-full mt-2"
+                placeholder="Add comment"
+                ref={commentRef}
+                required
+              />
+              <Button
+                icon={"comments"}
+                text={"Comment"}
+                className={"h-full"}
+                type={"submit"}
+              />
+            </form>
+          </div>
         </div>
       </div>
     </div>
   );
 };
-
 export default ClientDetails;
