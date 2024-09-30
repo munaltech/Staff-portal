@@ -71,16 +71,15 @@ const AddSubscription = ({ action }) => {
   };
 
   useEffect(() => {
-    setDiscount(subscription.discount);
     totalPrice();
   }, [selectedServices, discount]);
 
   const totalPrice = () => {
-    let total = 0;
+    let tempTotal = 0;
     selectedServices?.forEach((service) => {
-      total += service.price;
+      tempTotal += service.price;
     });
-    setTotal(total - discount);
+    setTotal(tempTotal - discount);
   };
 
   const addSubscription = async (e) => {
@@ -98,8 +97,6 @@ const AddSubscription = ({ action }) => {
     data.services = selectedServices;
     data.total = total;
     data.discount = discount;
-
-    console.log(data);
 
     try {
       const response = await fetch(
@@ -123,7 +120,6 @@ const AddSubscription = ({ action }) => {
         setLoading(false);
       }
     } catch (error) {
-      console.log(error);
       setLoading(false);
     }
   };
@@ -142,9 +138,12 @@ const AddSubscription = ({ action }) => {
 
     const data = await response.json();
     setSubscription(data.data);
-    console.log(data.data);
 
     setSelectedServices(data.data.services);
+
+    setTotal(data.data.total);
+
+    setDiscount(data.data.discount); 
   };
 
   const editSubscription = async (e) => {
@@ -162,8 +161,6 @@ const AddSubscription = ({ action }) => {
     data.services = selectedServices;
     data.total = total;
     data.discount = discount;
-
-    console.log(data);
 
     try {
       const response = await fetch(
@@ -208,21 +205,19 @@ const AddSubscription = ({ action }) => {
           <select
             name="client"
             id="client"
-            className="w-full rounded-md bg-slate-200  border border-gray-200 p-2"
+            className="w-full rounded-md bg-slate-200 border border-gray-200 p-2"
             required
             disabled={loading}
-            defaultValue={""}
+            value={subscription?.client || ""} // Use value prop here
+            onChange={(e) =>
+              setSubscription({ ...subscription, client: e.target.value })
+            }
           >
             <option value="" className="text-gray-400" disabled>
               Select Client
             </option>
-
             {clients.map((client) => (
-              <option
-                key={client.id}
-                value={client.id}
-                selected={client.id === subscription?.client}
-              >
+              <option key={client.id} value={client.id}>
                 {client.business_name}
               </option>
             ))}
@@ -245,7 +240,7 @@ const AddSubscription = ({ action }) => {
             name="service"
             className="w-full rounded-md bg-slate-200  border border-gray-200 p-2"
             onChange={handleServiceSelectChange}
-            required
+            required={selectedServices?.length === 0}
             disabled={loading}
             defaultValue={""}
           >
@@ -337,6 +332,7 @@ const AddSubscription = ({ action }) => {
             </span>
           </h3>
 
+          {/* TOTAL */}
           <h3 className="space-grotesk-bold flex justify-between text-gray-500">
             <span>Total:</span> <span> £ {total ? total : 0}</span>
           </h3>
