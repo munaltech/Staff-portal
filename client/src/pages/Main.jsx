@@ -29,13 +29,21 @@ const Main = () => {
     <div className="relative">
       <div className="flex flex-col w-screen h-screen">
         <TopBar />
-        <div className="flex h-full">
+        <div
+          className={
+            activePage === "client" ? "overflow-y-auto" : "flex h-[calc(100%-3.5rem)]"
+          }
+        >
           <Routes>
             <Route path="/*" element={<SideBar activePage={activePage} />} />
             <Route path="/client/:id" element={<ClientDetails />} />
           </Routes>
           <div
-            className={activePage === "client" ? "hidden" : "flex-1 px-8 py-4"}
+            className={
+              activePage === "client"
+                ? "hidden"
+                : "flex-1 px-8 py-4 overflow-y-auto"
+            }
           >
             <Routes>
               <Route path="/" element={<Navigate to="/dashboard" />} />
