@@ -5,7 +5,7 @@ function TopBar() {
 
   const navigate = useNavigate();
   return (
-    <div className="flex items-center justify-between px-8 py-2 border shadow-sm">
+    <div className="flex h-14 items-center justify-between px-8 py-2 border shadow-sm">
       <div className="flex gap-6 ">
         <button aria-label="Menu" hidden>
           <img
