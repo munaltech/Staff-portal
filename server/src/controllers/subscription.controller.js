@@ -96,12 +96,14 @@ const updateSubscription = asyncHandler(async (req, res) => {
     });
 
     // Extract service IDs from the frontend-provided services
-    const servicesIdFromFrontend = services.map(service => service.id);
+    const servicesIdFromFrontend = services.map((service) => service.id);
 
     // Remove services that are in `SubscribedService` but not in frontend services
     await Promise.all(
         allSubscribedServices.map(async (subscribedService) => {
-            if (!servicesIdFromFrontend.includes(subscribedService.service_id)) {
+            if (
+                !servicesIdFromFrontend.includes(subscribedService.service_id)
+            ) {
                 await subscribedService.destroy();
             }
         })
@@ -141,9 +143,10 @@ const updateSubscription = asyncHandler(async (req, res) => {
         subscribedServices,
     };
 
-    return res.status(200).json(new ApiResponse(200, data, "Subscription updated successfully"));
+    return res
+        .status(200)
+        .json(new ApiResponse(200, data, "Subscription updated successfully"));
 });
-
 
 const getSubscriptions = asyncHandler(async (req, res) => {
     const subscriptions = await Subscription.findAll();
@@ -189,6 +192,25 @@ const getSubscriptions = asyncHandler(async (req, res) => {
                 200,
                 updatedSubscriptions,
                 "Subscriptions fetched successfully"
+            )
+        );
+});
+
+const getActiveSubscriptions = asyncHandler(async (req, res) => {
+    // Fetch active subscriptions (those where ended_at is null)
+    const activeSubscriptions = await Subscription.findAll({
+        where: {
+            ended_at: null,
+        },
+    });
+
+    return res
+        .status(200)
+        .json(
+            new ApiResponse(
+                200,
+                activeSubscriptions,
+                "Active subscriptions fetched successfully"
             )
         );
 });
@@ -250,5 +272,6 @@ export {
     addSubscription,
     getSubscriptions,
     getSubscription,
+    getActiveSubscriptions,
     updateSubscription,
 };

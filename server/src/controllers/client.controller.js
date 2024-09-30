@@ -2,6 +2,7 @@ import Client from "../models/client.model.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
+import Subscription from "../models/subscription.model.js";
 
 const createClient = asyncHandler(async (req, res) => {
     const {
@@ -70,6 +71,32 @@ const getClients = asyncHandler(async (req, res) => {
         .json(new ApiResponse(200, clients, "Clients fetched successfully"));
 });
 
+const getActiveClients = asyncHandler(async (req, res) => {
+    // Fetch active subscriptions (those where ended_at is null)
+    const activeSubscriptions = await Subscription.findAll({
+        where: {
+            ended_at: null,
+        },
+    });
+
+    // Get unique client IDs from the active subscriptions
+    const activeClientIds = [
+        ...new Set(activeSubscriptions.map(subscription => subscription.client_id))
+    ];
+
+    // Fetch clients based on the unique client IDs
+    const clients = await Client.findAll({
+        where: {
+            id: activeClientIds,
+        },
+    });
+
+    return res
+        .status(200)
+        .json(new ApiResponse(200, clients, "Clients fetched successfully"));
+});
+
+
 const getClientDetails = asyncHandler(async (req, res) => {
     const { id } = req.params;
     const client = await Client.findByPk(id);
@@ -123,4 +150,4 @@ const updateClient = asyncHandler(async (req, res) => {
         .json(new ApiResponse(200, client, "Client updated successfully"));
 });
 
-export { createClient, getClients, getClientDetails, updateClient };
+export { createClient, getClients, getClientDetails, updateClient, getActiveClients };
