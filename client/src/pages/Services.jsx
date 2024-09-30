@@ -59,7 +59,7 @@ const Services = () => {
         />
       </div>
 
-      <div className="flex gap-4 select-none">
+      <div className="flex gap-4 select-none mt-4">
         {categories.map((category) => (
           <div key={category.id} onClick={() => filterCategory(category.id)}>
             <Filters title={category.name} filter={filter} id={category.id} />
@@ -72,6 +72,7 @@ const Services = () => {
         {filteredServices.map((service) => (
           <div
             key={service.id}
+            onClick={() => navigate(`/services/edit/${service.id}`)}
             className={`w-64 h-48 p-4 ${
               service.status === "inactive"
                 ? "bg-gray-300 cursor-default"

@@ -1,18 +1,31 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { Card } from "../components";
 import { useEffect, useState } from "react";
 
 import { ClipLoader } from "react-spinners";
 
-const AddService = () => {
+const AddService = ({ action }) => {
   const [loading, setLoading] = useState(false);
   const [categories, setCategories] = useState([]);
+  const [service, setService] = useState({});
 
   const navigate = useNavigate();
 
+  const { id } = useParams();
+
   useEffect(() => {
     getCategories();
+    if (action === "edit") {
+      getService();
+    }
   }, [navigate]);
+
+  const handleStatusChange = (status) => {
+    setService((prevService) => ({
+      ...prevService,
+      status: status,
+    }));
+  };
 
   const getCategories = async () => {
     const response = await fetch("http://localhost:8000/api/v1/categories", {
@@ -49,7 +62,6 @@ const AddService = () => {
       const res = await response.json();
       if (response.ok) {
         setLoading(false);
-        alert(res.message);
         navigate("/services");
       } else {
         setLoading(false);
@@ -60,14 +72,69 @@ const AddService = () => {
       alert(error.message);
     }
   };
+
+  const updateService = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+
+    const formData = new FormData(e.target);
+    const data = {};
+    formData.forEach((value, key) => {
+      data[key] = value;
+    });
+
+    try {
+      const response = await fetch(
+        `http://localhost:8000/api/v1/services/update/${id}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          },
+          body: JSON.stringify(data),
+        }
+      );
+      const res = await response.json();
+      if (response.ok) {
+        setLoading(false);
+        navigate("/services");
+      } else {
+        setLoading(false);
+        alert(res.message);
+      }
+    } catch (error) {
+      setLoading(false);
+      alert(error.message);
+    }
+  };
+
+  const getService = async () => {
+    const response = await fetch(
+      `http://localhost:8000/api/v1/services/${id}`,
+      {
+        method: "GET",
+
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+        },
+      }
+    );
+    const res = await response.json();
+
+    setService(res.data);
+  };
   return (
     <div className="bg-gray-800/10 z-10 absolute top-0 left-0 right-0 bottom-0 flex items-center justify-center">
       <Card className="mx-4 h-fit inter-regular bg-white">
-        <h1 className="text-2xl space-grotesk-bold text-center">New Service</h1>
+        <h1 className="text-2xl space-grotesk-bold text-center">
+          {action === "add" ? "Add Service" : "Edit Service"}
+        </h1>
 
         <form
           method="post"
-          onSubmit={addService}
+          onSubmit={action === "add" ? addService : updateService}
           className="space-y-4 inter-regular mt-4"
         >
           <input
@@ -78,6 +145,7 @@ const AddService = () => {
             maxLength={100}
             required
             disabled={loading}
+            defaultValue={action === "edit" ? service.name : ""}
           />
           <textarea
             type="text"
@@ -87,20 +155,39 @@ const AddService = () => {
             maxLength={300}
             required
             disabled={loading}
+            defaultValue={action === "edit" ? service.description : ""}
           />
 
-          <select
-            name="category_id"
-            className="w-full rounded-md bg-slate-200  border border-gray-200 p-2"
-            required
-            disabled={loading}
-          >
-            {categories.map((category) => (
-              <option value={category.id} key={category.id}>
-                {category.name}
+          <div className="flex gap-4 w-full">
+            <select
+              name="category_id"
+              className="flex-1 rounded-md bg-slate-200  border border-gray-200 p-2"
+              required
+              disabled={loading}
+              value={service?.category_id || ""}
+              onChange={(e) => {
+                setService({ ...service, category_id: e.target.value });
+              }}
+            >
+              <option value="" disabled>
+                Select Category
               </option>
-            ))}
-          </select>
+              {categories.map((category) => (
+                <option value={category.id} key={category.id}>
+                  {category.name}
+                </option>
+              ))}
+            </select>
+            {/* <select
+              name="unit"
+              id="unit"
+              className="rounded-md bg-slate-200  border border-gray-200 p-2"
+            >
+              <option value="per Hour">per Hour</option>
+              <option value="per Day">per Day</option>
+              <option value="per Project">per Project</option>
+            </select> */}
+          </div>
 
           <div className="relative">
             <input
@@ -111,6 +198,7 @@ const AddService = () => {
               required
               min={1}
               disabled={loading}
+              defaultValue={action === "edit" ? service.price : ""}
             />
             <div className="absolute top-1/2 left-3 -translate-y-1/2">$</div>
           </div>
@@ -123,6 +211,7 @@ const AddService = () => {
             required
             min={1}
             disabled={loading}
+            defaultValue={action === "edit" ? service.duration : ""}
           />
 
           <input
@@ -132,6 +221,7 @@ const AddService = () => {
             className="w-full rounded-md bg-slate-200  border border-gray-200 p-2"
             maxLength={100}
             disabled={loading}
+            defaultValue={action === "edit" ? service.tags : ""}
           />
 
           <textarea
@@ -141,30 +231,35 @@ const AddService = () => {
             className="w-full rounded-md bg-slate-200  border border-gray-200 p-2 max-h-28 min-h-20"
             maxLength={300}
             disabled={loading}
+            defaultValue={action === "edit" ? service.additional_notes : ""}
           />
 
-          <div className="flex  justify-center gap-10">
+          <div className="flex justify-center gap-10">
             <div className="flex gap-4">
               <input
                 type="radio"
                 name="status"
                 value="active"
-                className="w-full rounded-md bg-slate-200  border border-gray-200 p-2"
+                className="w-full rounded-md bg-slate-200 border border-gray-200 p-2"
                 required
                 disabled={loading}
+                checked={service.status === "active"} // Set checked based on the condition
+                onChange={() => handleStatusChange("active")} // Add onChange handler to update the status
               />
-              <label htmlFor="">Active</label>
+              <label htmlFor="status-active">Active</label>
             </div>
             <div className="flex gap-4">
               <input
                 type="radio"
                 name="status"
                 value="inactive"
-                className="w-full rounded-md bg-slate-200  border border-gray-200 p-2"
+                className="w-full rounded-md bg-slate-200 border border-gray-200 p-2"
                 required
                 disabled={loading}
+                checked={service.status === "inactive"} // Set checked based on the condition
+                onChange={() => handleStatusChange("inactive")} // Add onChange handler to update the status
               />
-              <label htmlFor="">Inactive</label>
+              <label htmlFor="status-inactive">Inactive</label>
             </div>
           </div>
 
@@ -175,7 +270,7 @@ const AddService = () => {
             {loading ? (
               <ClipLoader loading={loading} color="white" size={15} />
             ) : (
-              "Add Service"
+              action === "edit" ? "Update Service" : "Add Service"
             )}
           </button>
         </form>

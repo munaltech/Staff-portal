@@ -63,7 +63,8 @@ const Main = () => {
         <Route path="/users/signup" element={<Signup action="signup" />} />
         <Route path="/users/edit/:id" element={<Signup action="edit" />} />
         <Route path="/clients/add" element={<AddClient />} />
-        <Route path="/services/add" element={<AddService />} />
+        <Route path="/services/add" element={<AddService action={"add"} />} />
+        <Route path="/services/edit/:id" element={<AddService action={"edit"} />} />
         <Route path="/services/category/add" element={<AddCategory />} />
         <Route
           path="/subscriptions/add"
