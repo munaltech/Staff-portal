@@ -1,9 +1,13 @@
 import { useNavigate } from "react-router-dom";
-
+import Button from "./ui/Button";
 
 function TopBar() {
-
   const navigate = useNavigate();
+
+  const logout = () => {
+    localStorage.removeItem("access_token");
+    navigate("/login");
+  }
   return (
     <div className="flex h-14 items-center justify-between px-8 py-2 border shadow-sm">
       <div className="flex gap-6 ">
@@ -15,17 +19,28 @@ function TopBar() {
             alt="menu"
           />
         </button>
-        <a className="text-2xl space-grotesk-bold text-gray-600 cursor-pointer" onClick={() => navigate("/")}>
+        <a
+          className="text-2xl space-grotesk-bold text-gray-600 cursor-pointer"
+          onClick={() => navigate("/")}
+        >
           Munal Technology
         </a>
       </div>
 
-      <div className="flex gap-6">
-        
-        
-          <img src="" alt="profile" className="w-10 h-10 rounded-full object-cover cursor-pointer" />
-
-      </div>
+      {/* <div className="flex gap-6">
+        <img
+          src=""
+          alt="profile"
+          className="w-10 h-10 rounded-full object-cover cursor-pointer"
+        />
+      </div> */}
+      <Button
+      text={"Logout"}
+      icon="exit"
+      className={"bg-red-600 hover:bg-red-700"}
+      
+      onClick={logout}
+      />
     </div>
   );
 }
