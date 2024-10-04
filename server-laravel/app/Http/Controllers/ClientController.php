@@ -7,57 +7,121 @@ use Illuminate\Http\Request;
 
 class ClientController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+
+    // Fetch all clients
     public function index()
     {
-        return Client::all();
+        $clients = Client::all();
+
+        return response()->json([
+            'message' => 'Clients fetched Successfully',
+            'clients' => $clients
+        ]);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
+    // Create a new client
     public function store(Request $request)
     {
+        $requestingUser = $request->user();
+
+        if ($requestingUser->role !== "admin" && $requestingUser->role !== "level1") {
+            return response()->json([
+                'message' => 'Not Authorized'
+            ], 401);
+        }
         $fields = $request->validate([
-            'name'=>'required',
-            'email'=> 'required',
+            'business_name' => 'required|max:255|unique',
+            'address' => 'required|max:255',
+            'representative_position' => 'required|max:255',
+            'representative_name' => 'required|max:255',
+            'email' => 'required|email|unique',
+            'phone_number' => 'required|unique|min:10',
+            'card_name' => 'max:255',
+            'sort_code' => 'max:6|min:6',
+            'account_number' => 'max:20',
+            'bank_name' => 'max:255',
         ]);
 
         $client = Client::create($fields);
 
-        return ['client' => $client];
+        if (!$client) {
+            return response()->json([
+                'message' => 'Error Creating Client'
+            ], 500);
+        }
+
+        return response()->json([
+            'message' => 'Client Created Successfully',
+            'client' => $client
+        ], 200);
     }
 
-    /**
-     * Display the specified resource.
-     */
+    // Display a client and their details
     public function show(Client $client)
     {
-        return $client;
+        return response()->json([
+            'message' => 'Client Fetched Successfully',
+            'client' => $client
+        ]);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
+    // Update a client
     public function update(Request $request, Client $client)
     {
-    
+        $requestingUser = $request->user();
+
+        // Ensure only admin and level 1 users can update clients
+        if ($requestingUser->role !== 'admin' && $requestingUser->role !== 'level1') {
+            return response()->json([
+                'message' => 'Not Authorized'
+            ], 401);
+        }
+
+        // Validation rules
         $fields = $request->validate([
-            'name'=>'required',
-            'email'=> 'required',
+            'business_name' => 'sometimes|required|max:255|unique:clients,business_name,' . $client->id,  // Ensures unique business name but allows the current one
+            'address' => 'sometimes|required|max:255',
+            'representative_position' => 'sometimes|required|max:255',
+            'representative_name' => 'sometimes|required|max:255',
+            'email' => 'sometimes|required|email|unique:clients,email,' . $client->id,  // Ensures unique email but allows the current one
+            'phone_number' => 'sometimes|required|unique:clients,phone_number,' . $client->id . '|min:10',
+            'card_name' => 'sometimes|max:255',
+            'sort_code' => 'sometimes|max:6|min:6',
+            'account_number' => 'sometimes|max:20',
+            'bank_name' => 'sometimes|max:255',
         ]);
+
+        // Update client details
         $client->update($fields);
-        return ['client'=> $client];
+
+        return response()->json([
+            'message' => 'Client Updated Successfully',
+            'client' => $client
+        ], 200);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Client $client)
+    // Delete Client
+    public function destroy(Request $request, Client $client)
     {
-        $client->delete();
-        return ['message' => 'client deleted'];
+        $requestingUser = $request->user();
+
+        // Ensure only admin and level 1 users can delete clients
+        if ($requestingUser->role !== 'admin') {
+            return response()->json([
+                'message' => 'Not Authorized'
+            ], 401);
+        }
+
+        // Delete the client
+        if ($client->delete()) {
+            return response()->json([
+                'message' => 'Client Deleted Successfully'
+            ], 200);
+        }
+
+        // In case of failure
+        return response()->json([
+            'message' => 'Error Deleting Client'
+        ], 500);
     }
 }
