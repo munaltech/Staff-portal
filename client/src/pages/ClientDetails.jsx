@@ -36,30 +36,32 @@ const ClientDetails = () => {
   }, [navigate]);
 
   const getSubscriptions = async () => {
-    const response = await fetch("http://localhost:8000/api/v1/subscriptions", {
+    const response = await fetch("http://localhost:8000/api/subscriptions", {
       method: "GET",
       headers: {
+        "Accept": "application/json",
         "Content-Type": "application/json",
-        Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
       },
     });
-    const data = await response.json();
-    setSubscriptions(data.data);
+    const res = await response.json();
+    setSubscriptions(res.subscriptions);
   };
 
   const getClientDetails = async () => {
-    const response = await fetch(`http://localhost:8000/api/v1/clients/${id}`, {
+    const response = await fetch(`http://localhost:8000/api/clients/${id}`, {
       method: "GET",
 
       headers: {
+        "Accept": "application/json",
         "Content-Type": "application/json",
-        Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
       },
     });
 
     const res = await response.json();
 
-    setClient(res.data);
+    setClient(res.client);
   };
 
   const updateClient = async (e) => {
@@ -73,13 +75,14 @@ const ClientDetails = () => {
     });
 
     const response = await fetch(
-      `http://localhost:8000/api/v1/clients/update/${id}`,
+      `http://localhost:8000/api/clients/${id}`,
       {
         method: "PUT",
 
         headers: {
+          "Accept": "application/json",
           "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
         body: JSON.stringify(data),
       }
@@ -104,14 +107,18 @@ const ClientDetails = () => {
       data[key] = value;
     });
 
+    data.client_id = id;
+
+
     const response = await fetch(
-      `http://localhost:8000/api/v1/comments/${id}`,
+      `http://localhost:8000/api/comments`,
       {
         method: "POST",
 
         headers: {
+          "Accept": "application/json",
           "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
         body: JSON.stringify(data),
       }
@@ -127,37 +134,41 @@ const ClientDetails = () => {
 
   const getComments = async () => {
     const response = await fetch(
-      `http://localhost:8000/api/v1/comments/${id}`,
+      `http://localhost:8000/api/comments`,
       {
         method: "GET",
 
         headers: {
+          "Accept": "application/json",
           "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
       }
     );
-    const data = await response.json();
+    const res = await response.json();
+  
+    
 
-    setComments(data.data);
+    setComments(res.comments);
   };
 
   const getUsername = async (userId) => {
     const response = await fetch(
-      `http://localhost:8000/api/v1/users/${userId}`,
+      `http://localhost:8000/api/users/${userId}`,
       {
         method: "GET",
 
         headers: {
+          "Accept": "application/json",
           "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
       }
     );
 
-    const data = await response.json();
+    const res = await response.json();
     if (response.ok) {
-      return data.data.username;
+      return res.user.username;
     }
     return null;
   };
@@ -517,7 +528,7 @@ const ClientDetails = () => {
                   </h3>
                 </div>
               ))}
-              {comments.length === 0 && (
+              {comments?.length === 0 && (
                 <div className="text-sm w-full h-full flex justify-center items-center  inter-regular text-gray-500">
                  
                   <h1> No comments to show</h1>

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Client;
+use App\Models\Subscription;
 use Illuminate\Http\Request;
 
 class ClientController extends Controller
@@ -30,12 +31,12 @@ class ClientController extends Controller
             ], 401);
         }
         $fields = $request->validate([
-            'business_name' => 'required|max:255|unique',
+            'business_name' => 'required|max:255|unique:clients',
             'address' => 'required|max:255',
             'representative_position' => 'required|max:255',
             'representative_name' => 'required|max:255',
-            'email' => 'required|email|unique',
-            'phone_number' => 'required|unique|min:10',
+            'email' => 'required|email|unique:clients',
+            'phone_number' => 'required|unique:clients|min:10',
             'card_name' => 'max:255',
             'sort_code' => 'max:6|min:6',
             'account_number' => 'max:20',
@@ -123,5 +124,20 @@ class ClientController extends Controller
         return response()->json([
             'message' => 'Error Deleting Client'
         ], 500);
+    }
+
+    // Fetch active clients
+    public function getActiveClients(){
+        $activeSubscriptions = Subscription::where('ended_at', null)->get();
+
+        $activeClientIds = $activeSubscriptions->pluck('client_id')->unique();
+
+        $clients = Client::whereIn('id', $activeClientIds)->get();
+
+        return response()->json([
+            'message' => 'Active clients fetched successfully',
+            'clients' => $clients
+        ]);
+
     }
 }

@@ -66,11 +66,13 @@ const Signup = ({ action }) => {
 
     try {
       const response = await fetch(
-        "http://localhost:8000/api/v1/users/create",
+        "http://localhost:8000/api/users/register",
         {
           method: "POST",
           headers: {
+            "Accept": "application/json",
             "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
           body: JSON.stringify({
             full_name: fullName,
@@ -79,38 +81,53 @@ const Signup = ({ action }) => {
             phone_number: phoneNumber,
             username,
             password,
+            password_confirmation: confirmPassword,
           }),
         }
       );
+
+      
+      
 
       if (response.ok) {
         alert("User created successfully");
         setLoading(false);
         goToUsers();
       } else {
-        alert("Error creating user");
+        const res = await response.json();
+        if(response.status === 422){
+          const errors = res.errors;
+          let errorMessage = "Please fix the following errors: \n";
+          for (const [field,messages] of Object.entries(errors)) {
+            errorMessage += `${field}: ${messages.join(", ")}\n`;
+          }
+          alert(errorMessage);
+        }
         setLoading(false);
       }
-
-      const data = await response.json();
-      console.log(data);
     } catch (error) {
-      alert("Error creating user");
+      alert(error);
       setLoading(false);
     }
   };
 
   const fetchUser = async (id) => {
-    const response = await fetch(`http://localhost:8000/api/v1/users/${id}`, {
+    const response = await fetch(`http://localhost:8000/api/users/${id}`, {
       method: "GET",
+
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
     });
     const res = await response.json();
-    setUser(res.data);
-    setFullName(res.data.full_name);
-    setRole(res.data.role);
-    setEmail(res.data.email);
-    setPhoneNumber(res.data.phone_number);
-    setUsername(res.data.username);
+    
+    setUser(res.user);
+    setFullName(res.user.full_name);
+    setRole(res.user.role);
+    setEmail(res.user.email);
+    setPhoneNumber(res.user.phone_number);
+    setUsername(res.user.username);
   };
 
   const update = async (e) => {
@@ -136,12 +153,15 @@ const Signup = ({ action }) => {
     }
 
     try {
+      
       const response = await fetch(
-        "http://localhost:8000/api/v1/users/update/" + id,
+        "http://localhost:8000/api/users/"+ id,
         {
           method: "PUT",
           headers: {
+            "Accept": "application/json",
             "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
           body: JSON.stringify({
             full_name: fullName,
@@ -150,6 +170,7 @@ const Signup = ({ action }) => {
             phone_number: phoneNumber,
             username,
             password,
+            password_confirmation: confirmPassword,
           }),
         }
       );
@@ -285,14 +306,14 @@ const Signup = ({ action }) => {
             />
           </div>
 
-          <label htmlFor="confirmPassword" hidden>
+          <label htmlFor="password_confirmation" hidden>
             Confirm Password
           </label>
           <div className="relative">
             <input
               type={cpVisibility === "visible" ? "text" : "password"}
-              name="confirmPassword"
-              id="confirmPassword"
+              name="password_confirmation"
+              id="password_confirmation"
               placeholder="Confirm Password"
               className="w-full rounded-md border border-gray-200 p-2"
               onChange={(e) => setConfirmPassword(e.target.value)}

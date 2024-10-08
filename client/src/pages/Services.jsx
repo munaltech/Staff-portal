@@ -18,22 +18,32 @@ const Services = () => {
   }, [navigate]);
 
   const getCategories = async () => {
-    const response = await fetch("http://localhost:8000/api/v1/categories", {
+    const response = await fetch("http://localhost:8000/api/categories", {
       method: "GET",
+      headers: {
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      }
     });
     const res = await response.json();
 
-    setCategories(res.data);
+    setCategories(res.categories);
   };
 
   const getServices = async () => {
-    const response = await fetch("http://localhost:8000/api/v1/services", {
+    const response = await fetch("http://localhost:8000/api/services", {
       method: "GET",
+      headers: {
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      }
     });
 
     const res = await response.json();
 
-    setServices(res.data);
+    setServices(res.services);
   };
 
   const filteredServices = services.filter((service) => {

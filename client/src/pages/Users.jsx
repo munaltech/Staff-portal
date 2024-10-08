@@ -12,16 +12,32 @@ const Users = () => {
   }, [navigate]);
 
   const getUsers = async () => {
-    const response = await fetch("http://localhost:8000/api/v1/users");
+    const response = await fetch("http://localhost:8000/api/users",
+      {
+        method: "GET",
 
-    const { data } = await response.json();
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      }
+    );
 
-    setUsers(data);
+    const res = await response.json();
+    setUsers(res.users);
   };
 
   const deleteUser = async (id) => {
-    await fetch(`http://localhost:8000/api/v1/users/${id}`, {
+
+    
+    await fetch(`http://localhost:8000/api/users/${id}`, {
       method: "DELETE",
+
+      headers: {
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
     });
     getUsers();
   };
@@ -49,7 +65,7 @@ const Users = () => {
             </tr>
           </thead>
           <tbody className="text-center text-balance">
-            {users.map((user, index) => (
+            {users?.map((user, index) => (
               <tr key={index}>
                 <td className="border px-4 py-2">{user.username}</td>
                 <td className="border px-4 py-2">{user.full_name}</td>

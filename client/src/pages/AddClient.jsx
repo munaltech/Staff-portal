@@ -18,14 +18,18 @@ const AddClient = () => {
     formData.forEach((value, key) => {
       data[key] = value;
     });
+    
+    
 
     try {
       const response = await fetch(
-        "http://localhost:8000/api/v1/clients/create",
+        "http://localhost:8000/api/clients",
         {
           method: "POST",
           headers: {
+            "Accept": "application/json",
             "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
           body: JSON.stringify(data),
         }

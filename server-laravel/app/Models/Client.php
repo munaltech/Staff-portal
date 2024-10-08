@@ -11,7 +11,7 @@ class Client extends Model
 
     protected $fillable = [
         "business_name",
-        "addresss",
+        "address",
         "representative_position",
         "representative_name",
         "email",
@@ -24,5 +24,11 @@ class Client extends Model
 
     public function setEmailAttribute($value){
         $this->attributes["email"] = strtolower($value);
+    }
+    public function comments(){
+        return $this->hasMany(Comment::class);
+    }
+    public function subscriptions(){
+        return $this->hasMany(Subscription::class);
     }
 }

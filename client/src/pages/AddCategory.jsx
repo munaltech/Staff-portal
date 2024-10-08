@@ -18,11 +18,12 @@ const AddCategory = () => {
       data[key] = value;
     });
 
-    const response = await fetch("http://localhost:8000/api/v1/categories/create", {
+    const response = await fetch("http://localhost:8000/api/categories", {
       method: "POST",
       headers: {
+        "Accept": "application/json",
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${localStorage.getItem("access_token")}`,
+        "Authorization": `Bearer ${localStorage.getItem("token")}`,
       },
       body: JSON.stringify(data),
     });

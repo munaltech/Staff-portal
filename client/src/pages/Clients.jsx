@@ -20,12 +20,18 @@ const Clients = () => {
   
 
   const getClients = async () => {
-    const response = await fetch("http://localhost:8000/api/v1/clients", {
+    const response = await fetch("http://localhost:8000/api/clients", {
       method: "GET",
+
+      headers: {
+        "Accept": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
     });
     const res = await response.json();
 
-    setClients(res.data);
+    setClients(res.clients);
+    
   };
 
   const filteredClients = clients.filter((client) => {

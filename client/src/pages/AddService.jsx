@@ -28,13 +28,18 @@ const AddService = ({ action }) => {
   };
 
   const getCategories = async () => {
-    const response = await fetch("http://localhost:8000/api/v1/categories", {
+    const response = await fetch("http://localhost:8000/api/categories", {
       method: "GET",
+      headers: {
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      }
     });
 
     const res = await response.json();
 
-    setCategories(res.data);
+    setCategories(res.categories);
   };
 
   const addService = async (e) => {
@@ -49,12 +54,13 @@ const AddService = ({ action }) => {
 
     try {
       const response = await fetch(
-        "http://localhost:8000/api/v1/services/add",
+        "http://localhost:8000/api/services",
         {
           method: "POST",
           headers: {
+            "Accept": "application/json",
             "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
           body: JSON.stringify(data),
         }
@@ -85,12 +91,13 @@ const AddService = ({ action }) => {
 
     try {
       const response = await fetch(
-        `http://localhost:8000/api/v1/services/update/${id}`,
+        `http://localhost:8000/api/services/${id}`,
         {
           method: "PUT",
           headers: {
+            "Accept": "application/json",
             "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
           body: JSON.stringify(data),
         }
@@ -111,19 +118,20 @@ const AddService = ({ action }) => {
 
   const getService = async () => {
     const response = await fetch(
-      `http://localhost:8000/api/v1/services/${id}`,
+      `http://localhost:8000/api/services/${id}`,
       {
         method: "GET",
 
         headers: {
+          "Accept": "application/json",
           "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
       }
     );
     const res = await response.json();
 
-    setService(res.data);
+    setService(res.service);
   };
   return (
     <div className="bg-gray-800/10 z-10 absolute top-0 left-0 right-0 bottom-0 flex items-center justify-center">

@@ -15,33 +15,36 @@ const Dashboard = () => {
   }, [navigate]);
   const getNumberOfActiveClients = async () => {
     const response = await fetch(
-      "http://localhost:8000/api/v1/clients/active",
+      "http://localhost:8000/api/clients/active",
       {
         method: "GET",
         headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          "Accept": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
       }
     );
     const res = await response.json();
-    setNumberOfActiveClients(res.data.length);
+    setNumberOfActiveClients(res.clients?.length);
   };
 
   const getNumberOfActiveSubscriptions = async () => {
     const response = await fetch(
-      "http://localhost:8000/api/v1/subscriptions/active",
+      "http://localhost:8000/api/subscriptions/active",
       {
         method: "GET",
         headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          "Accept": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
       }
     );
+    
 
     const res = await response.json();
-    setNumberOfActiveSubscriptions(res.data.length);
+    console.log(res);
+    
+    setNumberOfActiveSubscriptions(res.subscriptions?.length);
   };
   return (
     <>

@@ -15,27 +15,24 @@ class AuthController extends Controller
         if ($requestingUser->role !== "admin") {
             return response()->json([
                 "message" => "Not Authorized"
-            ], 401);
+            ], 403);
         }
 
 
         $fields = $request->validate([
             'full_name' => 'required|max:100',
             'role' => 'required|in:admin,level1,level2',
-            'email' => 'required|email|unique:users',
-            'phone_number' => 'required|unique:users',
-            'username' => 'required|unique:users',
+            'email' => 'required|email|unique:users,email',
+            'phone_number' => 'required|unique:users,phone_number',
+            'username' => 'required|unique:users,username',
             'password' => 'required|min:8|confirmed',
         ]);
 
         $user = User::create($fields);
 
-        $token = $user->createToken($request->username);
-
         return response()->json([
             'message' => 'User Registered Successfully',
             'user' => $user,
-            'token' => $token->plainTextToken,
         ], 200);
     }
     public function login(Request $request)

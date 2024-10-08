@@ -36,24 +36,37 @@ const AddSubscription = ({ action }) => {
   // API CALLS
   // GET CLIENTS FROM BACKEND
   const getClients = async () => {
-    const response = await fetch("http://localhost:8000/api/v1/clients", {
+    const response = await fetch("http://localhost:8000/api/clients", {
       method: "GET",
+      headers:{
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      }
     });
-    const data = await response.json();
-    setClients(data.data);
+    const res = await response.json();
+    setClients(res.clients);
   };
 
   // GET SERVICES FROM BACKEND
   const getServices = async () => {
-    const response = await fetch("http://localhost:8000/api/v1/services", {
+    const response = await fetch("http://localhost:8000/api/services", {
       method: "GET",
+      headers:{
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      }
     });
-    const data = await response.json();
-    setServices(data.data);
+    const res = await response.json();
+    setServices(res.services);
   };
 
   const handleServiceSelectChange = (e) => {
+
     const serviceId = parseInt(e.target.value, 10);
+
+    e.target.value = "";
 
     const alreadySelected = selectedServices.some(
       (service) => service.id === serviceId
@@ -100,12 +113,13 @@ const AddSubscription = ({ action }) => {
 
     try {
       const response = await fetch(
-        "http://localhost:8000/api/v1/subscriptions/add",
+        "http://localhost:8000/api/subscriptions",
         {
           method: "POST",
           headers: {
+            "Accept": "application/json",
             "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
           body: JSON.stringify(data),
         }
@@ -126,24 +140,27 @@ const AddSubscription = ({ action }) => {
 
   const getSubscription = async () => {
     const response = await fetch(
-      `http://localhost:8000/api/v1/subscriptions/subscription/${id}`,
+      `http://localhost:8000/api/subscriptions/${id}`,
       {
         method: "GET",
         headers: {
+          "Accept": "application/json",
           "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
       }
     );
 
-    const data = await response.json();
-    setSubscription(data.data);
+    const res = await response.json();
+    console.log(res);
+    
+    setSubscription(res.subscription);
 
-    setSelectedServices(data.data.services);
+    setSelectedServices(res.subscription.services);
 
-    setTotal(data.data.total);
+    setTotal(res.subscription.total);
 
-    setDiscount(data.data.discount); 
+    setDiscount(res.subscription.discount); 
   };
 
   const editSubscription = async (e) => {
@@ -164,12 +181,13 @@ const AddSubscription = ({ action }) => {
 
     try {
       const response = await fetch(
-        `http://localhost:8000/api/v1/subscriptions/update/${id}`,
+        `http://localhost:8000/api/subscriptions/${id}`,
         {
           method: "PUT",
           headers: {
+            "Accept": "application/json",
             "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
           body: JSON.stringify(data),
         }
@@ -203,14 +221,14 @@ const AddSubscription = ({ action }) => {
         >
           {/* SELECT CLIENT */}
           <select
-            name="client"
-            id="client"
+            name="client_id"
+            id="client_id"
             className="w-full rounded-md bg-slate-200 border border-gray-200 p-2"
             required
             disabled={loading}
-            value={subscription?.client || ""} // Use value prop here
+            value={subscription?.client_id || ""} // Use value prop here
             onChange={(e) =>
-              setSubscription({ ...subscription, client: e.target.value })
+              setSubscription({ ...subscription, client_id: e.target.value })
             }
           >
             <option value="" className="text-gray-400" disabled>
@@ -227,11 +245,11 @@ const AddSubscription = ({ action }) => {
           <input
             type="date"
             className="w-full rounded-md bg-slate-200  border border-gray-200 p-2"
-            name="date"
-            id="date"
+            name="started_at"
+            id="started_at"
             required
             disabled={loading}
-            defaultValue={subscription?.date?.split("T")[0]}
+            defaultValue={subscription?.started_at?.split(" ")[0]}
           />
 
           {/* SELECT SERVICES */}

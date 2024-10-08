@@ -4,9 +4,24 @@ import Button from "./ui/Button";
 function TopBar() {
   const navigate = useNavigate();
 
-  const logout = () => {
-    localStorage.removeItem("access_token");
-    navigate("/login");
+  const logout =  async () => {
+    
+    const response = await fetch("http://localhost:8000/api/users/logout", {
+      method: "POST",
+      headers: {
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+    });
+    
+    if (response.ok) {
+      localStorage.removeItem("token");
+      navigate("/login");
+    }else{
+      alert("Something went wrong");
+    }
+    
   }
   return (
     <div className="flex h-14 items-center justify-between px-8 py-2 border shadow-sm">

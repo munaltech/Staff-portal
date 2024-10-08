@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { PageHeading, Button, Card } from "../components";
+import { PageHeading, Button } from "../components";
 import { useEffect, useState } from "react";
 
 const Subscriptions = () => {
@@ -11,16 +11,16 @@ const Subscriptions = () => {
   }, [navigate]);
 
   const getSubscriptions = async () => {
-    const response = await fetch("http://localhost:8000/api/v1/subscriptions", {
+    const response = await fetch("http://localhost:8000/api/subscriptions", {
       method: "GET",
       headers: {
+        "Accept": "application/json",
         "Content-Type": "application/json",
-        Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
       },
     });
-    const data = await response.json();
-    setSubscriptions(data.data);
-    console.log(data.data);
+    const res = await response.json();
+    setSubscriptions(res.subscriptions);
   };
 
   return (
@@ -64,6 +64,11 @@ const Subscriptions = () => {
                   <h3> &pound; {service.price}</h3>
                 </div>
               ))}
+              <div className="flex justify-between mt-2 inter-medium text-center text-base">
+                <h3><strong>Total</strong></h3>
+                <h1>&pound; {subscription.total}</h1>
+              </div>
+              
             </div>
             <div className="flex items-center gap-4">
               <Button icon={"edit"} onClick={() => navigate(`/subscriptions/edit/${subscription.id}`)} />

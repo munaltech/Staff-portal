@@ -11,8 +11,6 @@ const Login = () => {
 
   const [password, setPassword] = useState("");
 
-  const [remember, setRemember] = useState(false);
-
   const toggleVisibility = () => {
     if (visibility === "visible") {
       // If the password is currently visible, hide it
@@ -28,7 +26,7 @@ const Login = () => {
     setLoading(true);
 
     try {
-      const response = await fetch("http://localhost:8000/api/v1/users/login", {
+      const response = await fetch("http://localhost:8000/api/users/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -36,13 +34,14 @@ const Login = () => {
         body: JSON.stringify({ username, password }),
       });
 
+      const result = await response.json();
       if (response.ok) {
-        const result = await response.json();
-        localStorage.setItem("access_token", result.data.access_token);
-        localStorage.setItem("refresh_token", result.data.refresh_token);
+        localStorage.setItem("token", result.token);
         setLoading(false);
         window.location.href = "/";
       } else {
+
+        alert("Invalid username or password", result.message);
         setLoading(false);
       }
     } catch (error) {
