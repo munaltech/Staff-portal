@@ -54,7 +54,7 @@ const Login = () => {
   return (
     <div className="h-screen flex flex-col py-8 items-center gap-4">
       <img
-        src="../assets/munal_logo_opacity.png"
+        src="/munal_logo_opacity.png"
         alt="logo"
         width={100}
         height={100}
