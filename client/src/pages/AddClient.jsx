@@ -23,7 +23,7 @@ const AddClient = () => {
 
     try {
       const response = await fetch(
-        "http://localhost:8000/api/clients",
+        "https://api.munaltechnology.com/api/clients",
         {
           method: "POST",
           headers: {

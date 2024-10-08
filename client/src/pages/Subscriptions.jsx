@@ -11,7 +11,7 @@ const Subscriptions = () => {
   }, [navigate]);
 
   const getSubscriptions = async () => {
-    const response = await fetch("http://localhost:8000/api/subscriptions", {
+    const response = await fetch("https://api.munaltechnology.com/api/subscriptions", {
       method: "GET",
       headers: {
         "Accept": "application/json",

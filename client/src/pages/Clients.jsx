@@ -20,7 +20,7 @@ const Clients = () => {
   
 
   const getClients = async () => {
-    const response = await fetch("http://localhost:8000/api/clients", {
+    const response = await fetch("https://api.munaltechnology.com/api/clients", {
       method: "GET",
 
       headers: {

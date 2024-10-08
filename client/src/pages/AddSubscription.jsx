@@ -36,7 +36,7 @@ const AddSubscription = ({ action }) => {
   // API CALLS
   // GET CLIENTS FROM BACKEND
   const getClients = async () => {
-    const response = await fetch("http://localhost:8000/api/clients", {
+    const response = await fetch("https://api.munaltechnology.com/api/clients", {
       method: "GET",
       headers:{
         "Accept": "application/json",
@@ -50,7 +50,7 @@ const AddSubscription = ({ action }) => {
 
   // GET SERVICES FROM BACKEND
   const getServices = async () => {
-    const response = await fetch("http://localhost:8000/api/services", {
+    const response = await fetch("https://api.munaltechnology.com/api/services", {
       method: "GET",
       headers:{
         "Accept": "application/json",
@@ -113,7 +113,7 @@ const AddSubscription = ({ action }) => {
 
     try {
       const response = await fetch(
-        "http://localhost:8000/api/subscriptions",
+        "https://api.munaltechnology.com/api/subscriptions",
         {
           method: "POST",
           headers: {
@@ -140,7 +140,7 @@ const AddSubscription = ({ action }) => {
 
   const getSubscription = async () => {
     const response = await fetch(
-      `http://localhost:8000/api/subscriptions/${id}`,
+      `https://api.munaltechnology.com/api/subscriptions/${id}`,
       {
         method: "GET",
         headers: {
@@ -181,7 +181,7 @@ const AddSubscription = ({ action }) => {
 
     try {
       const response = await fetch(
-        `http://localhost:8000/api/subscriptions/${id}`,
+        `https://api.munaltechnology.com/api/subscriptions/${id}`,
         {
           method: "PUT",
           headers: {

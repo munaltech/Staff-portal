@@ -18,7 +18,7 @@ const AddCategory = () => {
       data[key] = value;
     });
 
-    const response = await fetch("http://localhost:8000/api/categories", {
+    const response = await fetch("https://api.munaltechnology.com/api/categories", {
       method: "POST",
       headers: {
         "Accept": "application/json",

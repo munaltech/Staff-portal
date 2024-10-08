@@ -28,7 +28,7 @@ const AddService = ({ action }) => {
   };
 
   const getCategories = async () => {
-    const response = await fetch("http://localhost:8000/api/categories", {
+    const response = await fetch("https://api.munaltechnology.com/api/categories", {
       method: "GET",
       headers: {
         "Accept": "application/json",
@@ -54,7 +54,7 @@ const AddService = ({ action }) => {
 
     try {
       const response = await fetch(
-        "http://localhost:8000/api/services",
+        "https://api.munaltechnology.com/api/services",
         {
           method: "POST",
           headers: {
@@ -91,7 +91,7 @@ const AddService = ({ action }) => {
 
     try {
       const response = await fetch(
-        `http://localhost:8000/api/services/${id}`,
+        `https://api.munaltechnology.com/api/services/${id}`,
         {
           method: "PUT",
           headers: {
@@ -118,7 +118,7 @@ const AddService = ({ action }) => {
 
   const getService = async () => {
     const response = await fetch(
-      `http://localhost:8000/api/services/${id}`,
+      `https://api.munaltechnology.com/api/services/${id}`,
       {
         method: "GET",
 

@@ -66,7 +66,7 @@ const Signup = ({ action }) => {
 
     try {
       const response = await fetch(
-        "http://localhost:8000/api/users/register",
+        "https://api.munaltechnology.com/api/users/register",
         {
           method: "POST",
           headers: {
@@ -112,7 +112,7 @@ const Signup = ({ action }) => {
   };
 
   const fetchUser = async (id) => {
-    const response = await fetch(`http://localhost:8000/api/users/${id}`, {
+    const response = await fetch(`https://api.munaltechnology.com/api/users/${id}`, {
       method: "GET",
 
       headers: {
@@ -155,7 +155,7 @@ const Signup = ({ action }) => {
     try {
       
       const response = await fetch(
-        "http://localhost:8000/api/users/"+ id,
+        "https://api.munaltechnology.com/api/users/"+ id,
         {
           method: "PUT",
           headers: {

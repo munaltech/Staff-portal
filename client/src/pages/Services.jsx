@@ -18,7 +18,7 @@ const Services = () => {
   }, [navigate]);
 
   const getCategories = async () => {
-    const response = await fetch("http://localhost:8000/api/categories", {
+    const response = await fetch("https://api.munaltechnology.com/api/categories", {
       method: "GET",
       headers: {
         "Accept": "application/json",
@@ -32,7 +32,7 @@ const Services = () => {
   };
 
   const getServices = async () => {
-    const response = await fetch("http://localhost:8000/api/services", {
+    const response = await fetch("https://api.munaltechnology.com/api/services", {
       method: "GET",
       headers: {
         "Accept": "application/json",

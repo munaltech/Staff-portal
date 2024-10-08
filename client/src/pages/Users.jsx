@@ -12,7 +12,7 @@ const Users = () => {
   }, [navigate]);
 
   const getUsers = async () => {
-    const response = await fetch("http://localhost:8000/api/users",
+    const response = await fetch("https://api.munaltechnology.com/api/users",
       {
         method: "GET",
 
@@ -30,7 +30,7 @@ const Users = () => {
   const deleteUser = async (id) => {
 
     
-    await fetch(`http://localhost:8000/api/users/${id}`, {
+    await fetch(`https://api.munaltechnology.com/api/users/${id}`, {
       method: "DELETE",
 
       headers: {

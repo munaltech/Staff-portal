@@ -36,7 +36,7 @@ const ClientDetails = () => {
   }, [navigate]);
 
   const getSubscriptions = async () => {
-    const response = await fetch("http://localhost:8000/api/subscriptions", {
+    const response = await fetch("https://api.munaltechnology.com/api/subscriptions", {
       method: "GET",
       headers: {
         "Accept": "application/json",
@@ -49,7 +49,7 @@ const ClientDetails = () => {
   };
 
   const getClientDetails = async () => {
-    const response = await fetch(`http://localhost:8000/api/clients/${id}`, {
+    const response = await fetch(`https://api.munaltechnology.com/api/clients/${id}`, {
       method: "GET",
 
       headers: {
@@ -75,7 +75,7 @@ const ClientDetails = () => {
     });
 
     const response = await fetch(
-      `http://localhost:8000/api/clients/${id}`,
+      `https://api.munaltechnology.com/api/clients/${id}`,
       {
         method: "PUT",
 
@@ -111,7 +111,7 @@ const ClientDetails = () => {
 
 
     const response = await fetch(
-      `http://localhost:8000/api/comments`,
+      `https://api.munaltechnology.com/api/comments`,
       {
         method: "POST",
 
@@ -134,7 +134,7 @@ const ClientDetails = () => {
 
   const getComments = async () => {
     const response = await fetch(
-      `http://localhost:8000/api/comments`,
+      `https://api.munaltechnology.com/api/comments`,
       {
         method: "GET",
 
@@ -154,7 +154,7 @@ const ClientDetails = () => {
 
   const getUsername = async (userId) => {
     const response = await fetch(
-      `http://localhost:8000/api/users/${userId}`,
+      `https://api.munaltechnology.com/api/users/${userId}`,
       {
         method: "GET",
 

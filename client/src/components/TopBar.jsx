@@ -6,7 +6,7 @@ function TopBar() {
 
   const logout =  async () => {
     
-    const response = await fetch("http://localhost:8000/api/users/logout", {
+    const response = await fetch("https://api.munaltechnology.com/api/users/logout", {
       method: "POST",
       headers: {
         "Accept": "application/json",

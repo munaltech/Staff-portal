@@ -15,7 +15,7 @@ const Dashboard = () => {
   }, [navigate]);
   const getNumberOfActiveClients = async () => {
     const response = await fetch(
-      "http://localhost:8000/api/clients/active",
+      "https://api.munaltechnology.com/api/clients/active",
       {
         method: "GET",
         headers: {
@@ -30,7 +30,7 @@ const Dashboard = () => {
 
   const getNumberOfActiveSubscriptions = async () => {
     const response = await fetch(
-      "http://localhost:8000/api/subscriptions/active",
+      "https://api.munaltechnology.com/api/subscriptions/active",
       {
         method: "GET",
         headers: {
