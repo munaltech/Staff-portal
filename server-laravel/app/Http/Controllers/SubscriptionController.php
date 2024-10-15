@@ -140,14 +140,50 @@ class SubscriptionController extends Controller
     {
         $fields = $request->validate([
             "client_id" => "required",
-            "started_at" => "required",
-            "ended_at" => "",
+            "started_at" => "required|date",
+            "ended_at" => "nullable|date",
             "discount" => "min:0",
             "total" => "required|min:0",
             "description" => "max:1000",
+            "services" => "array|min:1",
+            "services.*.id" => "exists:services,id",
+            "services.*.price" => "required|min:0"
         ]);
 
-        $subscription->update($fields);
+        $subscriptionData = [
+            'client_id' => $fields['client_id'],
+            'started_at' => $fields['started_at'],
+            'discount' => $fields['discount'],
+            'total' => $fields['total'],
+            'description' => $fields['description'],
+        ];
+
+        $subscription->update($subscriptionData);
+
+        $newServiceIds = collect($fields['services'])->pluck('id')->toArray();
+
+        $existingServices = SubscribedService::where('subscription_id', $subscription->id)->get();
+
+        foreach ($existingServices as $existingService) {
+            if (!in_array($existingService->service_id, $newServiceIds)) {
+                $existingService->delete();
+            }
+        }
+
+        foreach ($fields['services'] as $service) {
+            $subscribedService = SubscribedService::where('subscription_id', $subscription->id)->where('service_id', $service['id'])->first();
+            if ($subscribedService) {
+                $subscribedService->price = $service['price'];
+                $subscribedService->save();
+            } else {
+                SubscribedService::create([
+                    'subscription_id' => $subscription->id,
+                    'service_id' => $service['id'],
+                    'price' => $service['price'],
+                ]);
+            }
+        }
+
         return response()->json([
             "message" => "Subscription Updated Successfully",
             "subscription" => $subscription
