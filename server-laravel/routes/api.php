@@ -4,6 +4,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\CommentController;
+use App\Http\Controllers\PackageController;
 use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\SubscriptionController;
 use Illuminate\Http\Request;
@@ -20,6 +21,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('categories', CategoryController::class);
     Route::apiResource('subscriptions', SubscriptionController::class);
     Route::apiResource('comments', CommentController::class);
+    Route::apiResource('packages', PackageController::class);
 });
 
 
