@@ -72,7 +72,7 @@ const Services = () => {
       <div className="flex gap-4 select-none mt-4">
         {categories.map((category) => (
           <div key={category.id} onClick={() => filterCategory(category.id)}>
-            <Filters title={category.name} filter={filter} id={category.id} />
+            <Filters title={category.name} filter={filter} id={category.id} onClick={() => filterCategory(category.id)} />
           </div>
         ))}
         <Filters icon="plus" />
