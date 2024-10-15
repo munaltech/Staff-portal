@@ -20,10 +20,10 @@ class Subscription extends Model
     ];
     
     public function client(){
-        return $this->belongsTo(Client::class);
+        return $this->belongsTo(Client::class, "client_id");
     }
     public function user(){
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, "created_by");
     }
     public function subscribed_services(){
         return $this->hasMany(SubscribedService::class);
