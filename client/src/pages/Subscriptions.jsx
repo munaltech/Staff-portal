@@ -11,16 +11,49 @@ const Subscriptions = () => {
   }, [navigate]);
 
   const getSubscriptions = async () => {
-    const response = await fetch("https://api.munaltechnology.com/api/subscriptions", {
-      method: "GET",
-      headers: {
-        "Accept": "application/json",
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-      },
-    });
+    const response = await fetch(
+      "https://api.munaltechnology.com/api/subscriptions",
+      {
+        method: "GET",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      }
+    );
     const res = await response.json();
     setSubscriptions(res.subscriptions);
+  };
+
+  const markAsEnded = async (id) => {
+    if (
+      window.confirm(
+        "Are you sure you want to mark this subscription as ended?"
+      )
+    ) {
+      const response = await fetch(
+        `https://api.munaltechnology.com/api/subscriptions/end/${id}`,
+        {
+          method: "post",
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+          body: JSON.stringify({
+            ended_at: new Date(),
+          }),
+        }
+      );
+
+      const res = await response.json();
+      if (response.ok) {
+        getSubscriptions();
+      } else {
+        alert(res.message);
+      }
+    }
   };
 
   return (
@@ -48,11 +81,17 @@ const Subscriptions = () => {
                   {subscription.client.business_name}
                 </h1>
                 <h3 className="space-grotesk-bold text-sm text-gray-600">
-                  {subscription.ended_at < new Date() &&
-                  subscription.ended_at !== null
-                    ? "Expired"
-                    : "Active"}
+                  {subscription.ended_at !== null ? "Expired" : "Active"}
                 </h3>
+              </div>
+
+              <div className="flex items-center inter-medium text-xs text-gray-600 mb-2">
+                <h3 className=""><em>Since</em> {subscription.started_at.split(" ")[0]}</h3>
+
+                {subscription.ended_at !== null && (
+                  <h3 className="">&nbsp;<em>To</em> {subscription.ended_at.split(" ")[0]}</h3>
+                )}
+
               </div>
 
               {subscription.services.map((service) => (
@@ -65,14 +104,24 @@ const Subscriptions = () => {
                 </div>
               ))}
               <div className="flex justify-between mt-2 inter-medium text-center text-base">
-                <h3><strong>Total</strong></h3>
+                <h3>
+                  <strong>Total</strong>
+                </h3>
                 <h1>&pound; {subscription.total}</h1>
               </div>
-              
             </div>
-            <div className="flex items-center gap-4">
-              <Button icon={"edit"} onClick={() => navigate(`/subscriptions/edit/${subscription.id}`)} />
-              <Button icon={"checkmark"} className={"bg-red-600 hover:bg-red-800"} onClick={() => navigate(`/subscriptions/delete/${subscription.id}`)} />
+            <div className="flex flex-col justify-center items-center gap-4">
+              <Button
+                icon={"edit"}
+                onClick={() =>
+                  navigate(`/subscriptions/edit/${subscription.id}`)
+                }
+              />
+              <Button
+                icon={"checkmark"}
+                className={"bg-red-600 hover:bg-red-800"}
+                onClick={() => markAsEnded(subscription.id)}
+              />
             </div>
           </div>
         ))}
