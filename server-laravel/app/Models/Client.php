@@ -20,6 +20,7 @@ class Client extends Model
         "sort_code",
         "account_number",
         "bank_name",
+        "description",
     ];
 
     public function setEmailAttribute($value){
