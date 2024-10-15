@@ -36,28 +36,64 @@ const ClientDetails = () => {
   }, [navigate]);
 
   const getSubscriptions = async () => {
-    const response = await fetch("https://api.munaltechnology.com/api/subscriptions", {
-      method: "GET",
-      headers: {
-        "Accept": "application/json",
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-      },
-    });
+    const response = await fetch(
+      "https://api.munaltechnology.com/api/subscriptions",
+      {
+        method: "GET",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      }
+    );
     const res = await response.json();
     setSubscriptions(res.subscriptions);
   };
 
-  const getClientDetails = async () => {
-    const response = await fetch(`https://api.munaltechnology.com/api/clients/${id}`, {
-      method: "GET",
+  const markAsEnded = async (id) => {
+    if (
+      window.confirm(
+        "Are you sure you want to mark this subscription as ended?"
+      )
+    ) {
+      const response = await fetch(
+        `https://api.munaltechnology.com/api/subscriptions/end/${id}`,
+        {
+          method: "post",
+          headers: {
+            "Accept": "application/json",
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+          body: JSON.stringify({
+            ended_at: new Date(),
+          }),
+        }
+      );
 
-      headers: {
-        "Accept": "application/json",
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-      },
-    });
+      const res = await response.json();
+      if (response.ok) {
+        getSubscriptions();
+      } else {
+        alert(res.message);
+      }
+    }
+  };
+
+  const getClientDetails = async () => {
+    const response = await fetch(
+      `https://api.munaltechnology.com/api/clients/${id}`,
+      {
+        method: "GET",
+
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      }
+    );
 
     const res = await response.json();
 
@@ -80,7 +116,7 @@ const ClientDetails = () => {
         method: "PUT",
 
         headers: {
-          "Accept": "application/json",
+          Accept: "application/json",
           "Content-Type": "application/json",
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
@@ -109,14 +145,13 @@ const ClientDetails = () => {
 
     data.client_id = id;
 
-
     const response = await fetch(
       `https://api.munaltechnology.com/api/comments`,
       {
         method: "POST",
 
         headers: {
-          "Accept": "application/json",
+          Accept: "application/json",
           "Content-Type": "application/json",
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
@@ -139,15 +174,13 @@ const ClientDetails = () => {
         method: "GET",
 
         headers: {
-          "Accept": "application/json",
+          Accept: "application/json",
           "Content-Type": "application/json",
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
       }
     );
     const res = await response.json();
-  
-    
 
     setComments(res.comments);
   };
@@ -159,7 +192,7 @@ const ClientDetails = () => {
         method: "GET",
 
         headers: {
-          "Accept": "application/json",
+          Accept: "application/json",
           "Content-Type": "application/json",
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
@@ -336,7 +369,7 @@ const ClientDetails = () => {
                     }
                   />
                 ) : (
-                  client.email
+                  <a href={`mailto:${client.email}`}>{client.email}</a>
                 )}
               </p>
               <p>
@@ -356,7 +389,9 @@ const ClientDetails = () => {
                     }
                   />
                 ) : (
-                  client.phone_number
+                  <a href={`tel:${client.phone_number}`}>
+                    {client.phone_number}
+                  </a>
                 )}
               </p>
             </div>
@@ -458,10 +493,36 @@ const ClientDetails = () => {
                 </p>
               </div>
             </div>
+            <div className="mt-4">
+              <h3 className="text-sm text-zinc-500">Description</h3>
+              <p className="space-grotesk-regular">
+                {edit ? (
+                  <input
+                    type="text"
+                    name="description"
+                    className={`${
+                      edit
+                        ? "bg-white border border-gray-300"
+                        : "bg-transparent border-none"
+                    } focus:outline-none`}
+                    defaultValue={client.description}
+                    disabled={!edit}
+                    onChange={(e) =>
+                      setClient({ ...client, description: e.target.value })
+                    }
+                  />
+                ) : client.description ? (
+                  client.description
+                ) : (
+                  "No description"
+                )}
+              </p>
+            </div>
           </div>
         </div>
       </form>
       <div className="mt-8 w-full flex flex-wrap gap-x-8 gap-y-2 ">
+        {/* Subscriptions */}
         <div className="flex flex-col gap-4 flex-1">
           <h3 className="inter-semibold text-xl">Subscriptions</h3>
           {subscriptions
@@ -469,7 +530,7 @@ const ClientDetails = () => {
             .map((subscription) => (
               <div
                 key={subscription.id}
-                className="flex flex-wrap justify-between gap-8 px-4 py-2 border rounded-lg w-full h-fit hover:bg-gray-200 cursor-pointer transition-colors duration-300 ease-in-out"
+                className="flex flex-wrap justify-between gap-8 px-4 py-2 border-2 rounded-lg w-full h-fit hover:bg-gray-200 cursor-pointer transition-colors duration-300 ease-in-out"
               >
                 <div className="flex-1">
                   <div className="flex justify-between">
@@ -477,11 +538,20 @@ const ClientDetails = () => {
                       {subscription.client.business_name}
                     </h1>
                     <h3 className="space-grotesk-bold text-sm text-gray-600">
-                      {subscription.ended_at < new Date() &&
-                      subscription.ended_at !== null
-                        ? "Expired"
-                        : "Active"}
+                      {subscription.ended_at !== null ? "Expired" : "Active"}
                     </h3>
+                  </div>
+
+                  <div className="flex items-center inter-medium text-xs text-gray-600 mb-2">
+                    <h3 className="">
+                      <em>Since</em> {subscription.started_at.split(" ")[0]}
+                    </h3>
+
+                    {subscription.ended_at !== null && (
+                      <h3 className="">
+                        &nbsp;<em>To</em> {subscription.ended_at.split(" ")[0]}
+                      </h3>
+                    )}
                   </div>
 
                   {subscription.services.map((service) => (
@@ -493,8 +563,14 @@ const ClientDetails = () => {
                       <h3> &pound; {service.price}</h3>
                     </div>
                   ))}
+                  <div className="flex justify-between mt-2 inter-medium text-center text-base">
+                    <h3>
+                      <strong>Total</strong>
+                    </h3>
+                    <h1>&pound; {subscription.total}</h1>
+                  </div>
                 </div>
-                <div className="flex items-center gap-4">
+                <div className="flex flex-col justify-center items-center gap-4">
                   <Button
                     icon={"edit"}
                     onClick={() =>
@@ -504,33 +580,34 @@ const ClientDetails = () => {
                   <Button
                     icon={"checkmark"}
                     className={"bg-red-600 hover:bg-red-800"}
-                    onClick={() =>
-                      navigate(`/subscriptions/delete/${subscription.id}`)
-                    }
+                    onClick={() => markAsEnded(subscription.id)}
                   />
                 </div>
               </div>
             ))}
         </div>
 
+        {/* Comments */}
+
         <div className="flex-1 sm:flex-none">
           <h3 className="inter-semibold text-xl">Comments</h3>
           <div className="border overflow-clip rounded-lg mt-4 sm:w-96 ">
             <div className="overflow-y-scroll h-52 px-4">
-              {comments.map((comment) => (
-                <div
-                  key={comment.id}
-                  className="flex justify-between items-center text-sm inter-regular text-gray-700 border py-2 mt-2 px-4 rounded-2xl bg-slate-100"
-                >
-                  <h1 className="inter-regular text-wrap">{comment.text}</h1>
-                  <h3 className="text-xs bg-slate-300 p-2 rounded-2xl">
-                    {usernames[comment.user_id] || "Loading..."}
-                  </h3>
-                </div>
-              ))}
+              {comments
+                .filter((comment) => comment.client_id === client.id)
+                .map((comment) => (
+                  <div
+                    key={comment.id}
+                    className="flex justify-between items-center text-sm inter-regular text-gray-700 border py-2 mt-2 px-4 rounded-2xl bg-slate-100"
+                  >
+                    <h1 className="inter-regular text-wrap">{comment.text}</h1>
+                    <h3 className="text-xs bg-slate-300 p-2 rounded-2xl">
+                      {usernames[comment.user_id] || "Loading..."}
+                    </h3>
+                  </div>
+                ))}
               {comments?.length === 0 && (
                 <div className="text-sm w-full h-full flex justify-center items-center  inter-regular text-gray-500">
-                 
                   <h1> No comments to show</h1>
                 </div>
               )}
