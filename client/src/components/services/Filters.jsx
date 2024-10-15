@@ -1,20 +1,15 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-const Filters = ({ title, icon, filter, id }) => {
+const Filters = ({ title, icon, filter, id, onClick }) => {
   const [doubleClick, setDoubleClick] = useState(false);
   const navigate = useNavigate();
-  const [click, setClick] = useState(false);
 
   const clickHandler = () => {
     if (icon) {
       navigate("/services/category/add");
     } else {
-      if (filter === id) {
-        setClick(false);
-      } else {
-        setClick(true);
-      }
+      onClick();
     }
   };
 
@@ -25,8 +20,8 @@ const Filters = ({ title, icon, filter, id }) => {
   return (
     <div
       className={`relative w-fit px-4 py-1 ${
-        click ? "bg-gray-500 text-white" : "bg-gray-200"
-      } rounded-lg border cursor-pointer`}
+        filter === id  ? "bg-gray-500 text-white" : "bg-gray-200"
+      } rounded-lg border cursor-pointer hover:scale-x-105 duration-300 transition-all ease-in-out`}
       onDoubleClick={() => setDoubleClick(!doubleClick)}
       onClick={clickHandler}
     >
@@ -35,7 +30,7 @@ const Filters = ({ title, icon, filter, id }) => {
           <img
             width="20"
             height="20"
-            src={`https://img.icons8.com/000000/fluency-systems-regular/35/${icon}.png`}
+            src={`https://img.icons8.com/ffffff/fluency-systems-regular/35/${icon}.png`}
             alt="plus"
           />
         ))}
