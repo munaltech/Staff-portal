@@ -13,7 +13,7 @@ class SubscriptionController extends Controller
     // Display all subscriptions
     public function index()
     {
-        $subscriptions = Subscription::all();
+        $subscriptions = Subscription::orderBy('started_at', 'desc')->get();
 
         $updatedSubscriptions = $subscriptions->map(function ($subscription) {
             $client = Client::find($subscription->client_id);
@@ -186,5 +186,16 @@ class SubscriptionController extends Controller
             'message' => 'Active subscriptions fetched successfully',
             'subscriptions' => $subscriptions
         ]);
+    }
+
+    // Mark a subscription as ended
+    public function markAsEnded(Subscription $subscription)
+    {
+        $subscription->ended_at = now();
+        $subscription->save();
+        return response()->json([
+            'message' => 'Subscription marked as ended successfully',
+            'subscription' => $subscription
+        ], 200);
     }
 }

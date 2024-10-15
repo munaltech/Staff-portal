@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('clients/active', [ClientController::class, 'getActiveClients'])->middleware('auth:sanctum');
 Route::get('subscriptions/active', [SubscriptionController::class, 'getActiveSubscriptions'])->middleware('auth:sanctum');
+Route::post('subscriptions/end/{subscription}', [SubscriptionController::class, 'markAsEnded'])->middleware('auth:sanctum');
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('clients', ClientController::class);

@@ -41,6 +41,7 @@ class ClientController extends Controller
             'sort_code' => 'max:6|min:6',
             'account_number' => 'max:20',
             'bank_name' => 'max:255',
+            'description' => 'nullable|max:2000',
         ]);
 
         $client = Client::create($fields);
@@ -90,6 +91,7 @@ class ClientController extends Controller
             'sort_code' => 'sometimes|max:6|min:6',
             'account_number' => 'sometimes|max:20',
             'bank_name' => 'sometimes|max:255',
+            'description' => 'sometimes|max:2000|nullable',
         ]);
 
         // Update client details

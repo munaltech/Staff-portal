@@ -23,7 +23,7 @@ class AuthController extends Controller
             'full_name' => 'required|max:100',
             'role' => 'required|in:admin,level1,level2',
             'email' => 'required|email|unique:users,email',
-            'phone_number' => 'required|unique:users,phone_number',
+            'phone_number' => 'required|unique:users,phone_number|min:10',
             'username' => 'required|unique:users,username',
             'password' => 'required|min:8|confirmed',
         ]);
