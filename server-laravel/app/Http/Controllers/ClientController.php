@@ -12,7 +12,7 @@ class ClientController extends Controller
     // Fetch all clients
     public function index()
     {
-        $clients = Client::all();
+        $clients = Client::orderBy('created_at', 'desc')->get();
 
         return response()->json([
             'message' => 'Clients fetched Successfully',
