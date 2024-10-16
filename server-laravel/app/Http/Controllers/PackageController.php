@@ -113,7 +113,7 @@ class PackageController extends Controller
             "discount" => "numeric|min:0",
             "total" => "required|numeric|min:0",
             "description" => "string|max:2000",
-            "services"=> "exists:services,id",
+            "services"=> "array|min:1",
             "services.*.id" => "exists:services,id",
             "services.*.price" => "required|numeric|min:0"
         ]);
