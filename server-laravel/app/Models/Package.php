@@ -28,6 +28,9 @@ class Package extends Model
     public function services(){
         return $this->hasMany(PackagedService::class);
     }
+    public function package(){
+        return $this->hasMany(Subscription::class);
+    }
 
         
 }

@@ -49,6 +49,7 @@ class SubscriptionController extends Controller
             "discount" => "nullable|numeric|min:0",
             "total" => "required|numeric|min:0",
             "description" => "nullable|max:1000",
+            "package"=> "nullable|exists:packages,id",
             "services" => "required|array|min:1",
             "services.*.id" => "required|exists:services,id",
             "services.*.price" => "required|numeric|min:0"
@@ -69,6 +70,7 @@ class SubscriptionController extends Controller
             'discount' => $fields['discount'],
             'total' => $fields['total'],
             'description' => $fields['description'],
+            'package'=> $fields['package'],
             'created_by' => $request->user()->id,
         ];
 
@@ -125,7 +127,8 @@ class SubscriptionController extends Controller
             'description' => $subscription->description,
             'services' => $services,
             'total' => $subscription->total,
-            'discount' => $subscription->discount
+            'discount' => $subscription->discount,
+            'package' => $subscription->package
         ];
 
 
@@ -139,12 +142,13 @@ class SubscriptionController extends Controller
     public function update(Request $request, Subscription $subscription)
     {
         $fields = $request->validate([
-            "client_id" => "required",
+            "client_id" => "required|exists:clients,id",
             "started_at" => "required|date",
             "ended_at" => "nullable|date",
             "discount" => "min:0",
             "total" => "required|min:0",
             "description" => "max:1000",
+            "package"=> "nullable|exists:packages,id",
             "services" => "array|min:1",
             "services.*.id" => "exists:services,id",
             "services.*.price" => "required|min:0"
@@ -156,6 +160,7 @@ class SubscriptionController extends Controller
             'discount' => $fields['discount'],
             'total' => $fields['total'],
             'description' => $fields['description'],
+            'package'=> $fields['package'],
         ];
 
         $subscription->update($subscriptionData);

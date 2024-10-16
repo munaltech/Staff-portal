@@ -16,6 +16,7 @@ class Subscription extends Model
         "discount",
         "total",
         "description",
+        "package",
         "created_by",
     ];
     
@@ -27,5 +28,8 @@ class Subscription extends Model
     }
     public function subscribed_services(){
         return $this->hasMany(SubscribedService::class);
+    }
+    public function package(){
+        return $this->belongsTo(Package::class,"package");
     }
 }
