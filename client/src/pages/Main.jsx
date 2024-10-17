@@ -17,6 +17,7 @@ import { Navigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import AddClient from "./AddClient";
 import ClientDetails from "./ClientDetails";
+import AddPackage from "./AddPackage";
 
 const Main = () => {
   const [activePage, setActivePage] = useState("dashboard");
@@ -50,7 +51,7 @@ const Main = () => {
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/clients/*" element={<Clients />} />
               <Route path="/subscriptions/*" element={<Subscriptions />} />
-              <Route path="/packages" element={<Packages />} />
+              <Route path="/packages/*" element={<Packages />} />
               <Route path="/services/*" element={<Services />} />
               <Route path="/users/*" element={<Users />} />
               <Route path="/settings" element={<Settings />} />
@@ -65,7 +66,8 @@ const Main = () => {
         <Route path="/clients/add" element={<AddClient />} />
         <Route path="/services/add" element={<AddService action={"add"} />} />
         <Route path="/services/edit/:id" element={<AddService action={"edit"} />} />
-        <Route path="/services/category/add" element={<AddCategory />} />
+        <Route path="/services/category/add" element={<AddCategory action={"add"} />} />
+        <Route path="/services/category/edit/:id" element={<AddCategory action={"edit"} />} />
         <Route
           path="/subscriptions/add"
           element={<AddSubscription action="add" />}
@@ -74,6 +76,8 @@ const Main = () => {
           path="/subscriptions/edit/:id"
           element={<AddSubscription action="edit" />}
         />
+        <Route path="/packages/add" element = {<AddPackage action={"add"}/>} />
+        <Route path="/packages/edit/:id" element = {<AddPackage action={"edit"}/>} />
       </Routes>
     </div>
   );

@@ -6,6 +6,7 @@ import { ClipLoader } from "react-spinners";
 
 const AddService = ({ action }) => {
   const [loading, setLoading] = useState(false);
+  const [deleteLoading, setDeleteLoading] = useState(false);
   const [categories, setCategories] = useState([]);
   const [service, setService] = useState({});
 
@@ -28,14 +29,17 @@ const AddService = ({ action }) => {
   };
 
   const getCategories = async () => {
-    const response = await fetch("https://api.munaltechnology.com/api/categories", {
-      method: "GET",
-      headers: {
-        "Accept": "application/json",
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
+    const response = await fetch(
+      "https://api.munaltechnology.com/api/categories",
+      {
+        method: "GET",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
       }
-    });
+    );
 
     const res = await response.json();
 
@@ -58,7 +62,7 @@ const AddService = ({ action }) => {
         {
           method: "POST",
           headers: {
-            "Accept": "application/json",
+            Accept: "application/json",
             "Content-Type": "application/json",
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
@@ -95,7 +99,7 @@ const AddService = ({ action }) => {
         {
           method: "PUT",
           headers: {
-            "Accept": "application/json",
+            Accept: "application/json",
             "Content-Type": "application/json",
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
@@ -123,7 +127,7 @@ const AddService = ({ action }) => {
         method: "GET",
 
         headers: {
-          "Accept": "application/json",
+          Accept: "application/json",
           "Content-Type": "application/json",
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
@@ -132,6 +136,40 @@ const AddService = ({ action }) => {
     const res = await response.json();
 
     setService(res.service);
+  };
+
+  const deleteService = async () => {
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete this service?"
+    );
+    if (!confirmDelete) {
+      return;
+    }
+    setDeleteLoading(true);
+    try {
+      const response = await fetch(
+        `https://api.munaltechnology.com/api/services/${id}`,
+        {
+          method: "DELETE",
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+      const res = await response.json();
+      if (response.ok) {
+        setDeleteLoading(false);
+        navigate("/services");
+      } else {
+        setDeleteLoading(false);
+        alert(res.message);
+      }
+    } catch (error) {
+      setDeleteLoading(false);
+      alert(error.message);
+    }
   };
   return (
     <div className="bg-gray-800/10 z-10 absolute top-0 left-0 right-0 bottom-0 flex items-center justify-center">
@@ -152,7 +190,7 @@ const AddService = ({ action }) => {
             className="w-full rounded-md bg-slate-200  border border-gray-200 p-2 "
             maxLength={100}
             required
-            disabled={loading}
+            disabled={loading || deleteLoading}
             defaultValue={action === "edit" ? service.name : ""}
           />
           <textarea
@@ -162,7 +200,7 @@ const AddService = ({ action }) => {
             className="w-full max-h-40 min-h-20 rounded-md bg-slate-200  border border-gray-200 p-2"
             maxLength={300}
             required
-            disabled={loading}
+            disabled={loading || deleteLoading}
             defaultValue={action === "edit" ? service.description : ""}
           />
 
@@ -171,7 +209,7 @@ const AddService = ({ action }) => {
               name="category_id"
               className="flex-1 rounded-md bg-slate-200  border border-gray-200 p-2"
               required
-              disabled={loading}
+              disabled={loading || deleteLoading}
               value={service?.category_id || ""}
               onChange={(e) => {
                 setService({ ...service, category_id: e.target.value });
@@ -205,7 +243,7 @@ const AddService = ({ action }) => {
               className="w-full rounded-md bg-slate-200  border border-gray-200 p-2 ps-8"
               required
               min={1}
-              disabled={loading}
+              disabled={loading || deleteLoading}
               defaultValue={action === "edit" ? service.price : ""}
             />
             <div className="absolute top-1/2 left-3 -translate-y-1/2">$</div>
@@ -218,7 +256,7 @@ const AddService = ({ action }) => {
             className="w-full rounded-md bg-slate-200  border border-gray-200 p-2"
             required
             min={1}
-            disabled={loading}
+            disabled={loading || deleteLoading}
             defaultValue={action === "edit" ? service.duration : ""}
           />
 
@@ -228,7 +266,7 @@ const AddService = ({ action }) => {
             placeholder="Tags/Keywords"
             className="w-full rounded-md bg-slate-200  border border-gray-200 p-2"
             maxLength={100}
-            disabled={loading}
+            disabled={loading || deleteLoading}
             defaultValue={action === "edit" ? service.tags : ""}
           />
 
@@ -238,7 +276,7 @@ const AddService = ({ action }) => {
             placeholder="Additional Notes"
             className="w-full rounded-md bg-slate-200  border border-gray-200 p-2 max-h-28 min-h-20"
             maxLength={300}
-            disabled={loading}
+            disabled={loading || deleteLoading}
             defaultValue={action === "edit" ? service.additional_notes : ""}
           />
 
@@ -250,7 +288,7 @@ const AddService = ({ action }) => {
                 value="active"
                 className="w-full rounded-md bg-slate-200 border border-gray-200 p-2"
                 required
-                disabled={loading}
+                disabled={loading || deleteLoading}
                 checked={service.status === "active"} // Set checked based on the condition
                 onChange={() => handleStatusChange("active")} // Add onChange handler to update the status
               />
@@ -263,7 +301,7 @@ const AddService = ({ action }) => {
                 value="inactive"
                 className="w-full rounded-md bg-slate-200 border border-gray-200 p-2"
                 required
-                disabled={loading}
+                disabled={loading || deleteLoading}
                 checked={service.status === "inactive"} // Set checked based on the condition
                 onChange={() => handleStatusChange("inactive")} // Add onChange handler to update the status
               />
@@ -277,11 +315,26 @@ const AddService = ({ action }) => {
           >
             {loading ? (
               <ClipLoader loading={loading} color="white" size={15} />
+            ) : action === "edit" ? (
+              "Update Service"
             ) : (
-              action === "edit" ? "Update Service" : "Add Service"
+              "Add Service"
             )}
           </button>
         </form>
+        {action === "edit" && (
+          <button
+            className="w-full rounded-md bg-red-500 p-2 text-white mt-2"
+            onClick={deleteService}
+          >
+            {deleteLoading ? (
+              <ClipLoader loading={deleteLoading} color="white" size={15} />
+            ) : (
+              "Delete Service"
+            )}
+          </button>
+        )}
+
         <button
           onClick={() => navigate("/services")}
           className="w-full rounded-md bg-blue-200 p-2 text-black mt-4"

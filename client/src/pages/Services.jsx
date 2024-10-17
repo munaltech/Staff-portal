@@ -12,34 +12,41 @@ const Services = () => {
 
   const [filter, setFilter] = useState(0);
 
+
   useEffect(() => {
     getCategories();
     getServices();
   }, [navigate]);
 
   const getCategories = async () => {
-    const response = await fetch("https://api.munaltechnology.com/api/categories", {
-      method: "GET",
-      headers: {
-        "Accept": "application/json",
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
+    const response = await fetch(
+      "https://api.munaltechnology.com/api/categories",
+      {
+        method: "GET",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
       }
-    });
+    );
     const res = await response.json();
 
     setCategories(res.categories);
   };
 
   const getServices = async () => {
-    const response = await fetch("https://api.munaltechnology.com/api/services", {
-      method: "GET",
-      headers: {
-        "Accept": "application/json",
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
+    const response = await fetch(
+      "https://api.munaltechnology.com/api/services",
+      {
+        method: "GET",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
       }
-    });
+    );
 
     const res = await response.json();
 
@@ -53,10 +60,9 @@ const Services = () => {
   const filterCategory = (id) => {
     if (id === filter) {
       setFilter(0);
-    }else{
+    } else {
       setFilter(id);
     }
-
   };
   return (
     <>
@@ -72,7 +78,12 @@ const Services = () => {
       <div className="flex gap-4 select-none mt-4">
         {categories.map((category) => (
           <div key={category.id} onClick={() => filterCategory(category.id)}>
-            <Filters title={category.name} filter={filter} id={category.id} onClick={() => filterCategory(category.id)} />
+            <Filters
+              title={category.name}
+              filter={filter}
+              id={category.id}
+              onClick={() => filterCategory(category.id)}
+            />
           </div>
         ))}
         <Filters icon="plus" />
@@ -94,6 +105,7 @@ const Services = () => {
                 <h1 className="text-lg inter-medium">{service.name}</h1>
                 <p className="text-sm inter-regular">{service.description}</p>
               </div>
+
               <div className="text-right">
                 <p className="text-sm inter-regular">£{service.price}</p>
                 <p className="text-sm inter-regular mt-2">{service.status}</p>

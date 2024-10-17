@@ -1,16 +1,12 @@
+import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import { ClipLoader } from "react-spinners";
-
 import { Button, Card } from "../components";
-import { useNavigate } from "react-router-dom";
 
-import { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
-
-const AddSubscription = ({ action }) => {
+const AddPackage = ({ action }) => {
   const [loading, setLoading] = useState(false);
 
   const [deleteLoading, setDeleteLoading] = useState(false);
-  const [clients, setClients] = useState([]);
   const [services, setServices] = useState([]);
 
   const [total, setTotal] = useState(0);
@@ -18,90 +14,22 @@ const AddSubscription = ({ action }) => {
   const [selectedServices, setSelectedServices] = useState([]);
 
   const [discount, setDiscount] = useState(0);
-
-  const [subscription, setSubscription] = useState({});
-
-  const [packages, setPackages] = useState([]);
-
-  const [selectedPackage, setSelectedPackage] = useState({});
+  const [packageData, setPackageData] = useState({});
 
   const navigate = useNavigate();
 
   const { id } = useParams();
 
   useEffect(() => {
-    const fetchData = async () => {
-      getPackages();
-      getClients();
-      getServices();
-    };
+    getServices();
 
-    fetchData();
-  }, [navigate]);
-
-  useEffect(() => {
     if (action === "edit") {
-      getSubscription();
+      getPackage();
       totalPrice();
     }
-  }, [navigate, packages]);
-
-  // API CALLS
-  // GET CLIENTS FROM BACKEND
-  const getClients = async () => {
-    const response = await fetch(
-      "https://api.munaltechnology.com/api/clients",
-      {
-        method: "GET",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      }
-    );
-    const res = await response.json();
-    setClients(res.clients);
-  };
-
-  // GET SERVICES FROM BACKEND
-  const getServices = async () => {
-    const response = await fetch(
-      "https://api.munaltechnology.com/api/services",
-      {
-        method: "GET",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      }
-    );
-    const res = await response.json();
-    setServices(res.services);
-  };
-
-  // GET PACKAGES FROM BACKEND
-  const getPackages = async () => {
-    const response = await fetch(
-      "https://api.munaltechnology.com/api/packages",
-      {
-        method: "GET",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      }
-    );
-
-    const res = await response.json();
-
-    setPackages(res.packages);
-  };
+  }, [navigate]);
 
   const handleServiceSelectChange = (e) => {
-    setSelectedPackage({});
     const serviceId = parseInt(e.target.value, 10);
 
     e.target.value = "";
@@ -133,12 +61,35 @@ const AddSubscription = ({ action }) => {
     setTotal(tempTotal - discount);
   };
 
-  const addSubscription = async (e) => {
+  // API CALLS
+
+  // GET SERVICES FROM BACKEND
+  const getServices = async () => {
+    const response = await fetch(
+      "https://api.munaltechnology.com/api/services",
+      {
+        method: "GET",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      }
+    );
+
+    const res = await response.json();
+
+    setServices(res.services);
+  };
+
+  // ADD PACKAGE TO BACKEND
+  const addPackage = async (e) => {
     e.preventDefault();
     setLoading(true);
 
     const formData = new FormData(e.target);
     const data = {};
+
     formData.forEach((value, key) => {
       if (key !== "service") {
         data[key] = value;
@@ -148,13 +99,10 @@ const AddSubscription = ({ action }) => {
     data.services = selectedServices;
     data.total = total;
     data.discount = discount;
-    data.package = selectedPackage.id;
-
-    console.log(data);
 
     try {
       const response = await fetch(
-        "https://api.munaltechnology.com/api/subscriptions",
+        "https://api.munaltechnology.com/api/packages",
         {
           method: "POST",
           headers: {
@@ -165,12 +113,14 @@ const AddSubscription = ({ action }) => {
           body: JSON.stringify(data),
         }
       );
-      const result = await response.json();
+
+      const res = await response.json();
+
       if (response.ok) {
         setLoading(false);
-        navigate("/subscriptions");
+        navigate("/packages");
       } else {
-        alert(result.message);
+        alert(res.message);
         setLoading(false);
       }
     } catch (error) {
@@ -179,12 +129,85 @@ const AddSubscription = ({ action }) => {
     }
   };
 
-  const getSubscription = async () => {
+  const getPackage = async () => {
+    const response = await fetch(
+      `https://api.munaltechnology.com/api/packages/${id}`,
+      {
+        method: "GET",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      }
+    );
+
+    const res = await response.json();
+    setPackageData(res.package);
+    setSelectedServices(res.package.services);
+    setTotal(res.package.total);
+    setDiscount(res.package.discount);
+  };
+
+  const updatePackage = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+
+    const formData = new FormData(e.target);
+    const data = {};
+
+    formData.forEach((value, key) => {
+      if (key !== "service") {
+        data[key] = value;
+      }
+    });
+
+    data.services = selectedServices;
+    data.total = total;
+    data.discount = discount;
+
     try {
       const response = await fetch(
-        `https://api.munaltechnology.com/api/subscriptions/${id}`,
+        `https://api.munaltechnology.com/api/packages/${id}`,
         {
-          method: "GET",
+          method: "PUT",
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+          body: JSON.stringify(data),
+        }
+      );
+
+      const res = await response.json();
+
+      if (response.ok) {
+        setLoading(false);
+        navigate("/packages");
+      } else {
+        alert(res.message);
+        setLoading(false);
+      }
+    } catch (error) {
+      alert(error.message);
+      setLoading(false);
+    }
+  };
+
+  const deletePackage = async () => {
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete this package?"
+    );
+    if (!confirmDelete) {
+      return;
+    }
+    setDeleteLoading(true);
+    try {
+      const response = await fetch(
+        `https://api.munaltechnology.com/api/packages/${id}`,
+        {
+          method: "DELETE",
           headers: {
             Accept: "application/json",
             "Content-Type": "application/json",
@@ -196,159 +219,42 @@ const AddSubscription = ({ action }) => {
       const res = await response.json();
 
       if (response.ok) {
-        const subscription = res.subscription;
-        if (subscription) {
-          setSubscription(subscription);
-          setSelectedServices(subscription.services || []);
-          setTotal(subscription.total || 0);
-          setDiscount(subscription.discount || 0);
-
-          const packageData = packages.find(
-            (packageItem) => packageItem.id === subscription.package
-          );
-          if (packageData) {
-            setSelectedPackage(packageData);
-          }
-        } else {
-          alert("Subscription not found");
-        }
+        setDeleteLoading(false);
+        navigate("/packages");
       } else {
+        setDeleteLoading(false);
         alert(res.message);
       }
     } catch (error) {
-      alert(error.message);
-    }
-  };
-
-  const editSubscription = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-
-    const formData = new FormData(e.target);
-    const data = {};
-    formData.forEach((value, key) => {
-      if (key !== "service") {
-        data[key] = value;
-      }
-    });
-
-    data.services = selectedServices;
-    data.total = total;
-    data.discount = discount;
-
-    try {
-      const response = await fetch(
-        `https://api.munaltechnology.com/api/subscriptions/${id}`,
-        {
-          method: "PUT",
-          headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-          body: JSON.stringify(data),
-        }
-      );
-      const result = await response.json();
-      if (response.ok) {
-        setLoading(false);
-        navigate("/subscriptions");
-      } else {
-        alert(result.message);
-        setLoading(false);
-      }
-    } catch (error) {
-      alert(error.message);
-      setLoading(false);
-    }
-  };
-
-  const handlePackageClick = (package_) => {
-    const selectedPackage = packages.find(
-      (packageItem) => packageItem.id === package_.id
-    );
-    setSelectedPackage(selectedPackage);
-    setSelectedServices(selectedPackage.services);
-    setDiscount(selectedPackage.discount);
-  };
-
-  const deleteSubscription = async () => {
-    const confirmDelete = window.confirm(
-      "Are you sure you want to delete this subscription?"
-    );
-    if (!confirmDelete) {
-      return;
-    }
-    setDeleteLoading(true);
-    try {
-      const response = await fetch(
-        `https://api.munaltechnology.com/api/subscriptions/${id}`,
-        {
-          method: "DELETE",
-          headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        }
-      );
-      const result = await response.json();
-      if (response.ok) {
-        setDeleteLoading(false);
-        navigate("/subscriptions");
-      } else {
-        alert(result.message);
-        setDeleteLoading(false);
-      }
-    } catch (error) {
-      alert(error.message);
       setDeleteLoading(false);
+      alert(error.message);
     }
-  };
+  }; 
+    
 
   return (
     <div className="bg-gray-800/10 z-10 absolute top-0 left-0 right-0 bottom-0 flex items-center justify-center">
       <Card className="mx-4 h-fit inter-regular bg-white">
         <h1 className="text-2xl space-grotesk-bold text-center">
-          {action === "edit" ? "Edit Subscription" : "Add Subscription"}
+          {action === "edit" ? "Edit Package" : "Add Package"}
         </h1>
 
         <form
           method="post"
-          onSubmit={action === "edit" ? editSubscription : addSubscription}
+          onSubmit={action === "edit" ? updatePackage : addPackage}
           className="space-y-4 inter-regular mt-4"
         >
-          {/* SELECT CLIENT */}
-          <select
-            name="client_id"
-            id="client_id"
-            className="w-full rounded-md bg-slate-200 border border-gray-200 p-2"
-            required
-            disabled={loading || deleteLoading}
-            value={subscription?.client_id || ""} // Use value prop here
-            onChange={(e) =>
-              setSubscription({ ...subscription, client_id: e.target.value })
-            }
-          >
-            <option value="" className="text-gray-400" disabled>
-              Select Client
-            </option>
-            {clients.map((client) => (
-              <option key={client.id} value={client.id}>
-                {client.business_name}
-              </option>
-            ))}
-          </select>
-
-          {/* DATE PICKER */}
+          {/* PACKAGE NAME */}
           <input
-            type="date"
+            type="text"
+            name="name"
+            id="name"
             className="w-full rounded-md bg-slate-200  border border-gray-200 p-2"
-            name="started_at"
-            id="started_at"
+            placeholder="Package Name"
+            defaultValue={packageData?.name}
+            maxLength={255}
             required
             disabled={loading || deleteLoading}
-            defaultValue={subscription?.started_at?.split(" ")[0]}
           />
 
           {/* SELECT SERVICES */}
@@ -373,36 +279,6 @@ const AddSubscription = ({ action }) => {
                 </option>
               ))}
           </select>
-
-          {/* PACKAGES */}
-          <div className="w-full flex flex-wrap gap-4 justify-between">
-            {packages?.map((package_) => (
-              <div
-                key={package_.id}
-                className={
-                  selectedPackage?.id === package_.id
-                    ? "bg-yellow-300 hover:bg-yellow-400 transition-colors duration-300 ease-in-out space-grotesk-regular  px-4 py-2 rounded-lg  flex flex-wrap gap-4 justify-between items-center cursor-pointer"
-                    : "bg-orange-200 hover:bg-orange-100 transition-colors duration-300 ease-in-out space-grotesk-regular  px-4 py-2 rounded-lg  flex flex-wrap gap-4 justify-between items-center cursor-pointer"
-                }
-                onClick={() => handlePackageClick(package_)}
-                disabled={loading || deleteLoading || (selectedPackage?.id === package_.id) }
-              >
-                {/* Package Name */}
-                <h3>{package_.name}</h3>
-
-                {/* Tick for the selected package */}
-
-                {selectedPackage?.id === package_.id && (
-                  <img
-                    width="18"
-                    height="18"
-                    src="https://img.icons8.com/material-rounded/32/ok--v1.png"
-                    alt="ok--v1"
-                  />
-                )}
-              </div>
-            ))}
-          </div>
 
           {/* ALL THE SELECTED SERVICES ARE DISPLAYED HERE WITH EDITABLE PRICE */}
           {selectedServices?.map((service) => (
@@ -451,13 +327,11 @@ const AddSubscription = ({ action }) => {
                     "bg-red-700 hover:bg-red-500 duration-300 transition-colors ease-in-out"
                   }
                   iconClass={"text-white"}
-                  onClick={() => {
+                  onClick={() =>
                     setSelectedServices(
                       selectedServices.filter((s) => s.id !== service.id)
-                    );
-                    setSelectedPackage({});
-                    setDiscount(0);
-                  }}
+                    )
+                  }
                   disabled={loading || deleteLoading}
                 />
               </div>
@@ -474,15 +348,7 @@ const AddSubscription = ({ action }) => {
                 type="number"
                 className="border w-32 text-right rounded-md border-black/50 focus:outline focus:outline-gray-500 px-2 ps-6 py-1"
                 placeholder=""
-                defaultValue={
-                  action === "edit"
-                    ? subscription
-                      ? subscription.discount
-                      : selectedPackage.discount
-                    : selectedPackage
-                    ? selectedPackage.discount
-                    : 0
-                }
+                defaultValue={action === "edit" ? packageData?.discount : 0}
                 max={999999}
                 min={0}
                 onChange={(e) => setDiscount(e.target.value)}
@@ -501,9 +367,9 @@ const AddSubscription = ({ action }) => {
             name="description"
             placeholder="Description"
             className="w-full max-h-40 min-h-20 rounded-md bg-slate-200  border border-gray-200 p-2"
-            maxLength={300}
+            maxLength={2000}
             disabled={loading || deleteLoading}
-            defaultValue={subscription?.description}
+            defaultValue={packageData?.description}
           />
 
           <button
@@ -513,26 +379,26 @@ const AddSubscription = ({ action }) => {
             {loading ? (
               <ClipLoader loading={loading} color="white" size={15} />
             ) : action === "edit" ? (
-              "Update Subscription"
+              "Update Package"
             ) : (
-              "Add Subscription"
+              "Add Package"
             )}
           </button>
         </form>
         {action === "edit" && (
           <button
             className="w-full rounded-md bg-red-500 p-2 text-white mt-2"
-            onClick={() => deleteSubscription()}
+            onClick={deletePackage}
           >
             {deleteLoading ? (
               <ClipLoader loading={deleteLoading} color="white" size={15} />
             ) : (
-              "Delete Subscription"
+              "Delete Package"
             )}
           </button>
         )}
         <button
-          onClick={() => navigate("/subscriptions")}
+          onClick={() => navigate("/packages")}
           className="w-full rounded-md bg-blue-200 p-2 text-black mt-4"
         >
           Cancel
@@ -541,4 +407,5 @@ const AddSubscription = ({ action }) => {
     </div>
   );
 };
-export default AddSubscription;
+
+export default AddPackage;

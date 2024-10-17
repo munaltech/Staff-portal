@@ -42,7 +42,6 @@ const Dashboard = () => {
     
 
     const res = await response.json();
-    console.log(res);
     
     setNumberOfActiveSubscriptions(res.subscriptions?.length);
   };

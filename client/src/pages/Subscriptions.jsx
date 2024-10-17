@@ -24,6 +24,7 @@ const Subscriptions = () => {
     );
     const res = await response.json();
     setSubscriptions(res.subscriptions);
+    
   };
 
   const markAsEnded = async (id) => {
@@ -41,14 +42,14 @@ const Subscriptions = () => {
             "Content-Type": "application/json",
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
-          body: JSON.stringify({
-            ended_at: new Date(),
-          }),
+          
         }
       );
 
       const res = await response.json();
       if (response.ok) {
+        console.log(res.subscription);
+        
         getSubscriptions();
       } else {
         alert(res.message);

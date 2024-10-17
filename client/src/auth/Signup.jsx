@@ -46,8 +46,8 @@ const Signup = ({ action }) => {
     e.preventDefault();
     setLoading(true);
 
-    if (phoneNumber.length !== 10) {
-      alert("Phone number must be 10 digits long");
+    if (phoneNumber.length < 9) {
+      alert("Phone number must be 10 digits or longer");
       setLoading(false);
       return;
     }

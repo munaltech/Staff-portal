@@ -5,6 +5,8 @@ import { Button } from "../components";
 const ClientDetails = () => {
   const { id } = useParams();
 
+  const [deleteLoading, setDeleteLoading] = useState(false);
+
   const navigate = useNavigate();
   const [subscriptions, setSubscriptions] = useState([]);
 
@@ -62,7 +64,7 @@ const ClientDetails = () => {
         {
           method: "post",
           headers: {
-            "Accept": "application/json",
+            Accept: "application/json",
             "Content-Type": "application/json",
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
@@ -221,6 +223,40 @@ const ClientDetails = () => {
     fetchUsernames();
   }, [comments]);
 
+  const deleteClient = async () => {
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete this client?"
+    );
+    if (!confirmDelete) {
+      return;
+    }
+    setDeleteLoading(true);
+    try {
+      const response = await fetch(
+        `https://api.munaltechnology.com/api/clients/${id}`,
+        {
+          method: "DELETE",
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+      const result = await response.json();
+      if (response.ok) {
+        setDeleteLoading(false);
+        navigate("/clients");
+      } else {
+        alert(result.message);
+        setDeleteLoading(false);
+      }
+    } catch (error) {
+      alert(error.message);
+      setDeleteLoading(false);
+    }
+  };
+
   return (
     <div className="px-8 py-4 w-full inter-regular">
       <Button
@@ -277,7 +313,18 @@ const ClientDetails = () => {
             </p>
           </div>
 
-          <div className="flex flex-col items-end gap-2">
+          <div className="flex  justify-end gap-2">
+            <Button
+              text="Delete"
+              icon="delete"
+              onClick={deleteClient}
+              type={"button"}
+              className={`bg-red-600 hover:bg-red-500 disabled:bg-red-500 ${
+                edit ? "" : "hidden"
+              }`}
+              disabled={!edit}
+            />
+
             <Button
               text="Edit"
               icon="edit"
